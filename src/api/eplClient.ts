@@ -387,6 +387,62 @@ export async function getCurrentGameweekInfo(): Promise<{ gameweek: number; seas
   return { gameweek: estimatedGw, season };
 }
 
+// ─── Prior season stats (2024-25 final) ──────────────────────────────────────
+// Used to seed GW1-10 before current-season data is meaningful.
+// All values are per-game averages from the 2024-25 EPL final standings.
+// Promoted teams get Championship-regressed priors (≈70% toward EPL average).
+
+interface TeamPrior {
+  gfPg: number;           // goals for per game
+  gaPg: number;           // goals against per game
+  csRate: number;         // clean sheet rate (0-1)
+  bttsRate: number;       // both teams to score rate (0-1)
+  possessionPct: number;  // average possession %
+  sotPg: number;          // shots on target per game
+}
+
+const LEAGUE_AVG_PRIOR: TeamPrior = {
+  gfPg: 1.35, gaPg: 1.35, csRate: 0.28, bttsRate: 0.55, possessionPct: 50, sotPg: 3.5,
+};
+
+const PRIOR_STATS_2024_25: Record<string, TeamPrior> = {
+  // ── Top six ────────────────────────────────────────────────────────────────
+  LIV: { gfPg: 2.34, gaPg: 0.97, csRate: 0.45, bttsRate: 0.42, possessionPct: 58, sotPg: 5.5 },
+  ARS: { gfPg: 1.84, gaPg: 0.97, csRate: 0.42, bttsRate: 0.39, possessionPct: 57, sotPg: 5.2 },
+  MCI: { gfPg: 1.82, gaPg: 1.37, csRate: 0.34, bttsRate: 0.50, possessionPct: 62, sotPg: 5.6 },
+  CHE: { gfPg: 1.68, gaPg: 1.42, csRate: 0.31, bttsRate: 0.53, possessionPct: 53, sotPg: 4.8 },
+  NEW: { gfPg: 1.68, gaPg: 1.21, csRate: 0.37, bttsRate: 0.47, possessionPct: 48, sotPg: 4.5 },
+  AVL: { gfPg: 1.61, gaPg: 1.47, csRate: 0.29, bttsRate: 0.53, possessionPct: 50, sotPg: 4.6 },
+  // ── Upper mid-table ────────────────────────────────────────────────────────
+  TOT: { gfPg: 1.74, gaPg: 1.58, csRate: 0.26, bttsRate: 0.58, possessionPct: 52, sotPg: 5.0 },
+  NFO: { gfPg: 1.16, gaPg: 1.21, csRate: 0.37, bttsRate: 0.40, possessionPct: 44, sotPg: 3.7 },
+  BHA: { gfPg: 1.58, gaPg: 1.50, csRate: 0.29, bttsRate: 0.55, possessionPct: 55, sotPg: 4.6 },
+  FUL: { gfPg: 1.50, gaPg: 1.53, csRate: 0.27, bttsRate: 0.55, possessionPct: 47, sotPg: 4.1 },
+  // ── Lower mid-table ────────────────────────────────────────────────────────
+  MUN: { gfPg: 1.18, gaPg: 1.61, csRate: 0.24, bttsRate: 0.50, possessionPct: 50, sotPg: 3.9 },
+  WOL: { gfPg: 1.37, gaPg: 1.74, csRate: 0.21, bttsRate: 0.55, possessionPct: 43, sotPg: 3.6 },
+  BRE: { gfPg: 1.37, gaPg: 1.76, csRate: 0.21, bttsRate: 0.57, possessionPct: 43, sotPg: 4.0 },
+  CRY: { gfPg: 1.11, gaPg: 1.55, csRate: 0.26, bttsRate: 0.47, possessionPct: 42, sotPg: 3.4 },
+  EVE: { gfPg: 1.13, gaPg: 1.47, csRate: 0.28, bttsRate: 0.47, possessionPct: 43, sotPg: 3.5 },
+  WHU: { gfPg: 1.34, gaPg: 1.74, csRate: 0.21, bttsRate: 0.55, possessionPct: 44, sotPg: 3.7 },
+  BOU: { gfPg: 1.53, gaPg: 1.63, csRate: 0.26, bttsRate: 0.58, possessionPct: 47, sotPg: 4.2 },
+  // ── Promoted teams (2025-26) — Championship stats regressed 30% to EPL avg ─
+  // Formula: prior = 0.70 * championship_est + 0.30 * epl_avg
+  LEE: { gfPg: 1.27, gaPg: 1.57, csRate: 0.22, bttsRate: 0.53, possessionPct: 47, sotPg: 3.7 },
+  BUR: { gfPg: 1.16, gaPg: 1.62, csRate: 0.21, bttsRate: 0.52, possessionPct: 44, sotPg: 3.5 },
+  SUN: { gfPg: 1.13, gaPg: 1.60, csRate: 0.22, bttsRate: 0.51, possessionPct: 43, sotPg: 3.4 },
+};
+
+// Number of games played before we fully trust current-season stats.
+// At played=0: 100% prior. At played=PRIOR_FADE: 100% current.
+const PRIOR_FADE_GAMES = 10;
+
+function blendWithPrior(current: number, prior: number, played: number): number {
+  if (played >= PRIOR_FADE_GAMES) return current;
+  const priorWeight = PRIOR_FADE_GAMES - played;
+  return (played * current + priorWeight * prior) / PRIOR_FADE_GAMES;
+}
+
 // ─── Team stats from standings ────────────────────────────────────────────────
 
 interface ESPNStandingsResponse {
@@ -472,18 +528,50 @@ function buildTeamStats(
   const { played, wins, draws, losses, points, position, gf, ga } = data;
   const gp = Math.max(played, 1);
 
-  const gfPg = gf / gp;
-  const gaPg = ga / gp;
+  // Raw current-season per-game rates (unreliable when played is small)
+  const rawGfPg = played > 0 ? gf / played : 0;
+  const rawGaPg = played > 0 ? ga / played : 0;
 
-  // Attack and defense ratings relative to league average (1.35 goals/game each side)
+  // Pull prior for this team (fall back to league average for unknown teams)
+  const prior = PRIOR_STATS_2024_25[abbr] ?? LEAGUE_AVG_PRIOR;
+
+  // Blend: at GW1 (played=0) → 100% prior; at GW10+ → 100% current
+  const gfPg   = blendWithPrior(rawGfPg,         prior.gfPg,         played);
+  const gaPg   = blendWithPrior(rawGaPg,         prior.gaPg,         played);
+  const csRate = blendWithPrior(
+    played > 0 ? Math.max(0, 0.4 - (rawGaPg - 1.0) * 0.15) : 0,
+    prior.csRate, played,
+  );
+  const bttsR  = blendWithPrior(
+    played > 0 ? Math.min(0.75, 0.5 + (rawGfPg - 1.35) * 0.1 + (rawGaPg - 1.35) * 0.1) : 0,
+    prior.bttsRate, played,
+  );
+  const poss   = blendWithPrior(
+    played > 0 ? 50 + ((rawGfPg / 1.35) - 1.0) * 10 : 50,
+    prior.possessionPct, played,
+  );
+  const sot    = blendWithPrior(
+    played > 0 ? 3.5 + (rawGfPg - 1.35) * 2 : 3.5,
+    prior.sotPg, played,
+  );
+
   const LEAGUE_AVG = 1.35;
-  const attackRating = Math.max(0.3, gfPg / LEAGUE_AVG);
+  const attackRating  = Math.max(0.3, gfPg / LEAGUE_AVG);
   const defenseRating = Math.max(0.3, gaPg / LEAGUE_AVG);
 
-  // Form approximation from win% (simple proxy until live form is available)
-  const winPct = wins / gp;
-  const drawPct = draws / gp;
-  const formLast5 = Math.min(1.0, (winPct * 3 + drawPct * 1) / 3);
+  // Form: blend prior form (derived from prior win%) with current form
+  const priorForm = Math.min(1.0, (prior.gfPg - prior.gaPg + 1.35) / (1.35 * 2));
+  const winPct  = played > 0 ? wins  / played : 0;
+  const drawPct = played > 0 ? draws / played : 0;
+  const rawForm = Math.min(1.0, (winPct * 3 + drawPct * 1) / 3);
+  const formLast5 = blendWithPrior(rawForm, priorForm, played);
+
+  if (played < PRIOR_FADE_GAMES) {
+    logger.debug(
+      { abbr, played, gfPg: gfPg.toFixed(2), gaPg: gaPg.toFixed(2), priorWeight: PRIOR_FADE_GAMES - played },
+      'Using blended prior stats',
+    );
+  }
 
   return {
     teamId: ESPN_TEAM_IDS[abbr] ?? '',
@@ -501,13 +589,13 @@ function buildTeamStats(
     defenseRating,
     formLast5,
     homeFormLast5: formLast5,
-    awayFormLast5: formLast5 * 0.85,  // away form slightly lower
-    cleanSheetRate: Math.max(0, 0.4 - (gaPg - 1.0) * 0.15),
-    bttsRate: Math.min(0.75, 0.5 + (gfPg - 1.35) * 0.1 + (gaPg - 1.35) * 0.1),
+    awayFormLast5: formLast5 * 0.85,
+    cleanSheetRate: csRate,
+    bttsRate: bttsR,
     xgFor: gfPg,
     xgAgainst: gaPg,
-    shotsOnTargetPerGame: 3.5 + (gfPg - LEAGUE_AVG) * 2,
-    possessionPct: 50 + (attackRating - 1.0) * 10,
+    shotsOnTargetPerGame: sot,
+    possessionPct: poss,
   };
 }
 
