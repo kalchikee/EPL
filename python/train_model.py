@@ -49,8 +49,10 @@ FEATURE_NAMES = [
     "home_euro_fatigue", "away_euro_fatigue", "is_neutral",
     "lambda_home", "lambda_away",
     "vegas_home_prob", "vegas_draw_prob", "mc_home_win_prob",
-    # New v4.2 features
+    # v4.2: home/away split
     "home_att_home", "home_def_home", "away_att_away", "away_def_away",
+    # v4.2: head-to-head
+    "h2h_home_win_rate", "h2h_goal_diff",
 ]
 
 

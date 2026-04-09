@@ -8,11 +8,13 @@ import { runPoisson } from './models/monteCarlo.js';
 import { loadModel, predict as mlPredict, isModelLoaded, getModelInfo } from './models/metaModel.js';
 import { upsertPrediction, initDb, getPredictionsByGameweek } from './db/database.js';
 import { getOddsForMatch, loadOddsApiLines } from './api/oddsClient.js';
+import { loadH2H } from './api/h2hClient.js';
+import { fetchInjuries, applyInjuryAdjustment, getTeamInjuries } from './api/injuryClient.js';
 import { seedElos } from './features/eloEngine.js';
 import { computeEdge, getConfidenceTier } from './features/marketEdge.js';
 import type { EPLMatch, Prediction, PipelineOptions } from './types.js';
 
-const MODEL_VERSION = '4.1.0';
+const MODEL_VERSION = '4.2.0';
 
 // ─── Last match date lookup ───────────────────────────────────────────────────
 
@@ -50,7 +52,7 @@ export async function runPipeline(options: PipelineOptions = {}): Promise<Predic
     season = options.season ?? current.season;
   }
 
-  logger.info({ gameweek, season, version: MODEL_VERSION }, '=== EPL Oracle v4.1 Pipeline Start ===');
+  logger.info({ gameweek, season, version: MODEL_VERSION }, '=== EPL Oracle v4.2 Pipeline Start ===');
 
   await initDb();
   seedElos();
@@ -63,7 +65,13 @@ export async function runPipeline(options: PipelineOptions = {}): Promise<Predic
     logger.info('ML model not found — using Poisson MC only. Run: npm run train');
   }
 
+  // Load H2H lookup (precomputed from historical data)
+  loadH2H();
+
   await loadOddsApiLines();
+
+  // Load injury data (optional — requires API_FOOTBALL_KEY)
+  await fetchInjuries(season);
 
   const teamStats = await fetchAllTeamStats(season);
   const matches = await fetchGameweekSchedule(gameweek, season);
@@ -163,6 +171,16 @@ async function processMatch(
     calibrated_draw_prob = poisson.draw_prob;
     calibrated_away_prob = poisson.away_win_prob;
   }
+
+  // Apply injury adjustment (post-model, ±4% max based on squad fitness)
+  const injuryAdjusted = applyInjuryAdjustment(homeAbbr, awayAbbr, {
+    home: calibrated_home_prob,
+    draw: calibrated_draw_prob,
+    away: calibrated_away_prob,
+  });
+  calibrated_home_prob = injuryAdjusted.home;
+  calibrated_draw_prob = injuryAdjusted.draw;
+  calibrated_away_prob = injuryAdjusted.away;
 
   // Edge detection
   if (vegas_home_prob !== undefined && vegas_draw_prob !== undefined && vegas_away_prob !== undefined) {

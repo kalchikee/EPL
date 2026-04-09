@@ -46,6 +46,9 @@ export const FEATURE_NAMES = [
   'home_def_home',
   'away_att_away',
   'away_def_away',
+  // v4.2 head-to-head features
+  'h2h_home_win_rate',
+  'h2h_goal_diff',
 ] as const;
 
 // ─── GBM serialization types ──────────────────────────────────────────────────

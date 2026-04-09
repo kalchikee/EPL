@@ -123,6 +123,10 @@ export interface FeatureVector {
   home_def_home: number;         // home team defense rating (GA) from home games only
   away_att_away: number;         // away team attack rating from away games only
   away_def_away: number;         // away team defense rating (GA) from away games only
+
+  // Head-to-head history (v4.2)
+  h2h_home_win_rate: number;     // fraction of last 5 meetings where home team won
+  h2h_goal_diff: number;         // average (home goals - away goals) in last 5 meetings
 }
 
 // ─── Model outputs ────────────────────────────────────────────────────────────

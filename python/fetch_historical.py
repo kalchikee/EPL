@@ -21,6 +21,7 @@ Usage: python python/fetch_historical.py
 import argparse
 import csv
 import io
+import json
 import math
 import sys
 from collections import defaultdict, deque
@@ -121,9 +122,15 @@ FEATURE_NAMES = [
     "home_euro_fatigue", "away_euro_fatigue", "is_neutral",
     "lambda_home", "lambda_away",
     "vegas_home_prob", "vegas_draw_prob", "mc_home_win_prob",
-    # New v4.2 features: home/away split attack/defense
+    # v4.2: home/away split attack/defense
     "home_att_home", "home_def_home", "away_att_away", "away_def_away",
+    # v4.2: head-to-head history
+    "h2h_home_win_rate", "h2h_goal_diff",
 ]
+
+# EPL historical home win rate (default for teams with no H2H history)
+H2H_DEFAULT_WIN_RATE = 0.44
+H2H_DEFAULT_GOAL_DIFF = 0.28
 
 # ── Download helpers ──────────────────────────────────────────────────────────
 
@@ -488,6 +495,8 @@ def run(num_seasons: int = 10):
     all_rows = []
     elo   = EloEngine()
     stats = RollingStats()
+    # H2H records: key = frozenset({team1, team2}), persists across all seasons
+    h2h_records: dict = defaultdict(list)  # {(team_a, team_b): [{home, away, hg, ag, date}]}
 
     for season_meta in seasons_to_use:
         label    = season_meta["label"]
@@ -584,6 +593,22 @@ def run(num_seasons: int = 10):
             except (TypeError, ValueError):
                 h_sot_val = a_sot_val = 3.5
 
+            # ── Head-to-head features ──────────────────────────────────────────
+            pair_key = tuple(sorted([home, away]))
+            recent_h2h = h2h_records[pair_key][-5:]
+            if recent_h2h:
+                from_home_perspective = [
+                    (m["hg"] if m["home"] == home else m["ag"],   # home team goals
+                     m["ag"] if m["home"] == home else m["hg"])   # away team goals
+                    for m in recent_h2h
+                ]
+                h2h_wins = sum(1 for h_g, a_g in from_home_perspective if h_g > a_g)
+                h2h_home_win_rate = h2h_wins / len(recent_h2h)
+                h2h_goal_diff = float(np.mean([h_g - a_g for h_g, a_g in from_home_perspective]))
+            else:
+                h2h_home_win_rate = H2H_DEFAULT_WIN_RATE
+                h2h_goal_diff = H2H_DEFAULT_GOAL_DIFF
+
             fv = {
                 "elo_diff":              elo.diff(home, away),
                 "attack_diff":           att_h - att_a,
@@ -610,11 +635,14 @@ def run(num_seasons: int = 10):
                 "vegas_home_prob":       veg_h,
                 "vegas_draw_prob":       veg_d,
                 "mc_home_win_prob":      mc_h,
-                # New v4.2 features
+                # v4.2: home/away split
                 "home_att_home":         h_att_home,
                 "home_def_home":         h_def_home,
                 "away_att_away":         a_att_away,
                 "away_def_away":         a_def_away,
+                # v4.2: head-to-head
+                "h2h_home_win_rate":     h2h_home_win_rate,
+                "h2h_goal_diff":         h2h_goal_diff,
             }
 
             outcome  = "home" if ftr == "H" else "draw" if ftr == "D" else "away"
@@ -637,6 +665,11 @@ def run(num_seasons: int = 10):
             # Update stats AFTER building features (no lookahead bias)
             elo.update(home, away, hg, ag)
             stats.update(home, away, hg, ag, h_sot_val, a_sot_val, date)
+            # H2H: persist across seasons, update after match
+            h2h_records[pair_key].append({
+                "home": home, "away": away, "hg": hg, "ag": ag,
+                "date": date.strftime("%Y-%m-%d"),
+            })
 
         season_rows = [r for r in all_rows if r["season"] == year]
         h = sum(1 for r in season_rows if r["actual_outcome"] == "home")
@@ -660,6 +693,20 @@ def run(num_seasons: int = 10):
 
     print(f"\n[OK] {n} total matches written to {OUTPUT_PATH}")
     print(f"     H:{h} ({h/n*100:.0f}%)  D:{d} ({d/n*100:.0f}%)  A:{a} ({a/n*100:.0f}%)")
+
+    # ── Generate H2H lookup for TypeScript live pipeline ──────────────────────
+    h2h_lookup = {}
+    for pair, records in h2h_records.items():
+        key = "_".join(sorted(pair))  # e.g. "ARS_LIV"
+        h2h_lookup[key] = [
+            {"home": r["home"], "away": r["away"], "hg": r["hg"], "ag": r["ag"], "date": r["date"]}
+            for r in records[-10:]  # keep last 10 meetings
+        ]
+    h2h_path = ROOT_DIR / "data" / "h2h_lookup.json"
+    with open(h2h_path, "w") as f:
+        json.dump(h2h_lookup, f, separators=(",", ":"))
+    print(f"[OK] H2H lookup written to {h2h_path}  ({len(h2h_lookup)} team pairs)")
+
     print(f"\nNext step: python python/train_model.py")
 
 

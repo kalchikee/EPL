@@ -5,6 +5,7 @@
 import { logger } from '../logger.js';
 import type { EPLMatch, EPLTeamStats, FeatureVector } from '../types.js';
 import { getEloDiff } from './eloEngine.js';
+import { getH2HFeatures } from '../api/h2hClient.js';
 
 // ─── Rest days calculation ────────────────────────────────────────────────────
 
@@ -151,6 +152,8 @@ export async function computeFeatures(
     home_def_home: homeDefHome,
     away_att_away: awayAttAway,
     away_def_away: awayDefAway,
+    // Head-to-head (v4.2) — loaded from data/h2h_lookup.json
+    ...getH2HFeatures(homeAbbr, awayAbbr),
   };
 }
 

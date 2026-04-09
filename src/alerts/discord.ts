@@ -6,6 +6,7 @@
 import fetch from 'node-fetch';
 import { logger } from '../logger.js';
 import { getConfidenceTier, getDominantOutcome } from '../features/marketEdge.js';
+import { getTeamInjuries } from '../api/injuryClient.js';
 import type { Prediction } from '../types.js';
 import type { SeasonTotals } from '../db/database.js';
 
@@ -136,12 +137,22 @@ export async function sendGameweekPicks(
     };
   });
 
+  // Count teams with significant injuries
+  const teamsWithInjuries = new Set<string>();
+  for (const p of sorted) {
+    const hi = getTeamInjuries(p.home_team);
+    const ai = getTeamInjuries(p.away_team);
+    if (hi && hi.players.length > 0) teamsWithInjuries.add(p.home_team);
+    if (ai && ai.players.length > 0) teamsWithInjuries.add(p.away_team);
+  }
+  const injNote = teamsWithInjuries.size > 0 ? `  ·  ⚕️ ${teamsWithInjuries.size} teams with injuries` : '';
+
   const picksEmbed: DiscordEmbed = {
     title: `⚽ EPL Oracle — ${gwLabel} Picks`,
-    description: `${predictions.length} matches this gameweek  ·  ${highConv.length} high-conviction pick${highConv.length !== 1 ? 's' : ''}${hasEdge ? '  ·  ⚡ edge games flagged' : ''}`,
+    description: `${predictions.length} matches this gameweek  ·  ${highConv.length} high-conviction pick${highConv.length !== 1 ? 's' : ''}${hasEdge ? '  ·  ⚡ edge games flagged' : ''}${injNote}`,
     color: COLORS.picks,
     fields: picksFields,
-    footer: { text: '🔥🔥🔥 Extreme  🔥🔥 High  🔥 Strong  ✅ Lean  🪙 Coin Flip  ·  EPL Oracle v4.1' },
+    footer: { text: '🔥🔥🔥 Extreme  🔥🔥 High  🔥 Strong  ✅ Lean  🪙 Coin Flip  ·  EPL Oracle v4.2' },
     timestamp: new Date().toISOString(),
   };
 
@@ -163,12 +174,24 @@ export async function sendGameweekPicks(
       if (pred.feature_vector.rest_days_diff >= 4) reasons.push(`Home has ${pred.feature_vector.rest_days_diff}+ more rest days`);
       if (pred.feature_vector.elo_diff > 150) reasons.push(`Home Elo advantage: ${pred.feature_vector.elo_diff.toFixed(0)} pts`);
 
+      // Injuries for this match
+      const homeInj = getTeamInjuries(pred.home_team);
+      const awayInj = getTeamInjuries(pred.away_team);
+      const injLines: string[] = [];
+      if (homeInj && homeInj.players.length > 0) {
+        injLines.push(`⚕️ ${pred.home_team}: ${homeInj.label}`);
+      }
+      if (awayInj && awayInj.players.length > 0) {
+        injLines.push(`⚕️ ${pred.away_team}: ${awayInj.label}`);
+      }
+
       return {
         name: `${tierLabel}: ${pred.home_team} vs ${pred.away_team}`,
         value: [
           `**Pick:** ${pickLabel(pred)}`,
           `**Why:** ${reasons.join(' · ')}`,
           `Proj: ${pred.most_likely_score}  |  Poisson λ: ${pred.expected_home_goals.toFixed(2)}–${pred.expected_away_goals.toFixed(2)}`,
+          ...(injLines.length > 0 ? [injLines.join('\n')] : []),
         ].join('\n'),
         inline: false,
       };
