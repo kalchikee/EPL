@@ -2,7 +2,7 @@ node_modules/
 dist/
 cache/
 data/*.db
-data/model/
+# data/model/  — committed so GitHub Actions can use the trained model
 *.log
 .env
 .DS_Store

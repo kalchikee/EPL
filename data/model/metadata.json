@@ -1,0 +1,12 @@
+{
+  "version": "4.1.0",
+  "train_seasons": "2020-2024",
+  "avg_brier": 0.19887928558271808,
+  "avg_accuracy": 0.5026315789473684,
+  "cv_accuracy_mean": 0.5021052631578947,
+  "cv_accuracy_std": 0.04417291633338377,
+  "n_features": 25,
+  "n_train_samples": 1520,
+  "n_test_samples": 380,
+  "trained_at": "2026-04-09T13:19:24.882984"
+}

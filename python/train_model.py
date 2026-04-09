@@ -80,7 +80,6 @@ def train():
 
     # ── Train multinomial logistic regression ─────────────────────────────────
     model = LogisticRegression(
-        multi_class="multinomial",
         solver="lbfgs",
         max_iter=2000,
         C=0.8,           # L2 regularization
