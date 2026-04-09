@@ -1,0 +1,159 @@
+// EPL Oracle v4.1 — Feature Engineering
+// Computes 22 features as home-vs-away diffs and absolute values.
+// Sources: ESPN standings/stats, Elo ratings, schedule rest.
+
+import { logger } from '../logger.js';
+import type { EPLMatch, EPLTeamStats, FeatureVector } from '../types.js';
+import { getEloDiff } from './eloEngine.js';
+
+// ─── Rest days calculation ────────────────────────────────────────────────────
+
+function computeRestDays(matchDate: string, lastMatchDate: string | null): number {
+  if (!lastMatchDate) return 7; // assume full week rest for GW1
+  const game = new Date(matchDate);
+  const last = new Date(lastMatchDate);
+  const diffMs = game.getTime() - last.getTime();
+  return Math.round(diffMs / (1000 * 60 * 60 * 24));
+}
+
+function isShortRest(restDays: number): boolean {
+  return restDays <= 3; // ≤3 days = midweek turnaround
+}
+
+function hasEuroFatigue(restDays: number): boolean {
+  // If played Thursday and now playing Sunday = 3 days (Europa)
+  // If played Wednesday and now playing Saturday = 3 days (UCL/EL)
+  // Use rest days ≤ 3 as proxy for UEFA midweek fatigue
+  return restDays <= 3;
+}
+
+// ─── Main feature computation ─────────────────────────────────────────────────
+
+export async function computeFeatures(
+  match: EPLMatch,
+  allTeamStats: Map<string, EPLTeamStats>,
+  homeLastMatchDate: string | null,
+  awayLastMatchDate: string | null,
+): Promise<FeatureVector> {
+  const homeAbbr = match.homeTeam.teamAbbr;
+  const awayAbbr = match.awayTeam.teamAbbr;
+
+  logger.debug({ home: homeAbbr, away: awayAbbr }, 'Computing features');
+
+  const homeStats = allTeamStats.get(homeAbbr);
+  const awayStats = allTeamStats.get(awayAbbr);
+
+  if (!homeStats || !awayStats) {
+    logger.warn({ home: homeAbbr, away: awayAbbr }, 'Missing team stats — using league averages');
+  }
+
+  const home = homeStats ?? defaultStats(homeAbbr);
+  const away = awayStats ?? defaultStats(awayAbbr);
+
+  // ── Elo ───────────────────────────────────────────────────────────────────
+  const eloDiff = getEloDiff(homeAbbr, awayAbbr);
+
+  // ── Attack / Defense ratings ───────────────────────────────────────────────
+  // attack_diff > 0 → home scores more per game
+  const attackDiff = home.attackRating - away.attackRating;
+  // defense_diff > 0 → home concedes less (better defense)
+  const defenseDiff = away.defenseRating - home.defenseRating;
+
+  // ── Scoring ───────────────────────────────────────────────────────────────
+  const goalsForDiff = home.goalsForPerGame - away.goalsForPerGame;
+  const goalsAgainstDiff = home.goalsAgainstPerGame - away.goalsAgainstPerGame;
+  const goalDiffDiff = (home.goalsForPerGame - home.goalsAgainstPerGame) - (away.goalsForPerGame - away.goalsAgainstPerGame);
+  const netGoalsDiff = goalDiffDiff; // alias
+
+  // ── Form ──────────────────────────────────────────────────────────────────
+  const formDiff = home.formLast5 - away.formLast5;
+  const homeForm = home.homeFormLast5;
+  const awayForm = away.awayFormLast5;
+
+  // ── Table position ─────────────────────────────────────────────────────────
+  // Negative diff = home is higher in table (better)
+  const positionDiff = home.tablePosition - away.tablePosition;
+
+  // ── Shot quality ───────────────────────────────────────────────────────────
+  const shotsOnTargetDiff = home.shotsOnTargetPerGame - away.shotsOnTargetPerGame;
+
+  // ── Possession ────────────────────────────────────────────────────────────
+  const possessionDiff = home.possessionPct - away.possessionPct;
+
+  // ── Defensive solidity ─────────────────────────────────────────────────────
+  const cleanSheetDiff = home.cleanSheetRate - away.cleanSheetRate;
+
+  // ── Rest / fatigue ────────────────────────────────────────────────────────
+  const homeRestDays = computeRestDays(match.matchDate, homeLastMatchDate);
+  const awayRestDays = computeRestDays(match.matchDate, awayLastMatchDate);
+  const restDaysDiff = homeRestDays - awayRestDays;
+  const homeShortRest = isShortRest(homeRestDays) ? 1 : 0;
+  const awayShortRest = isShortRest(awayRestDays) ? 1 : 0;
+  const homeEuroFatigue = hasEuroFatigue(homeRestDays) ? 1 : 0;
+  const awayEuroFatigue = hasEuroFatigue(awayRestDays) ? 1 : 0;
+
+  // ── Venue context ──────────────────────────────────────────────────────────
+  const isNeutral = match.venueName.toLowerCase().includes('wembley') ||
+    match.venueName.toLowerCase().includes('neutral') ? 1 : 0;
+
+  // ── Poisson lambdas (computed by monteCarlo using attack/defense ratings) ──
+  // These will be set by the Monte Carlo engine after feature computation.
+  const LEAGUE_AVG_GOALS = 1.35;
+  const HOME_ADV = 1.18; // EPL home field advantage factor
+
+  const lambdaHome = LEAGUE_AVG_GOALS * home.attackRating * away.defenseRating * (isNeutral ? 1.0 : HOME_ADV);
+  const lambdaAway = LEAGUE_AVG_GOALS * away.attackRating * home.defenseRating;
+
+  logger.debug({
+    home: homeAbbr, away: awayAbbr,
+    lambdaHome: lambdaHome.toFixed(2), lambdaAway: lambdaAway.toFixed(2),
+    eloDiff: eloDiff.toFixed(0),
+  }, 'Features computed');
+
+  return {
+    elo_diff: eloDiff,
+    attack_diff: attackDiff,
+    defense_diff: defenseDiff,
+    goal_diff_diff: goalDiffDiff,
+    goals_for_diff: goalsForDiff,
+    goals_against_diff: goalsAgainstDiff,
+    net_goals_diff: netGoalsDiff,
+    form_diff: formDiff,
+    home_form: homeForm,
+    away_form: awayForm,
+    position_diff: positionDiff,
+    shots_on_target_diff: shotsOnTargetDiff,
+    possession_diff: possessionDiff,
+    clean_sheet_diff: cleanSheetDiff,
+    rest_days_diff: restDaysDiff,
+    home_short_rest: homeShortRest,
+    away_short_rest: awayShortRest,
+    home_euro_fatigue: homeEuroFatigue,
+    away_euro_fatigue: awayEuroFatigue,
+    is_neutral: isNeutral,
+    lambda_home: lambdaHome,
+    lambda_away: lambdaAway,
+    vegas_home_prob: 0,    // filled after odds lookup
+    vegas_draw_prob: 0,    // filled after odds lookup
+    mc_home_win_prob: 0,   // filled after Monte Carlo
+  };
+}
+
+function defaultStats(abbr: string): EPLTeamStats {
+  return {
+    teamId: abbr, teamAbbr: abbr, teamName: abbr,
+    played: 20, wins: 8, draws: 5, losses: 7, points: 29,
+    tablePosition: 10,
+    goalsFor: 27, goalsAgainst: 27, goalDifference: 0,
+    goalsForPerGame: 1.35, goalsAgainstPerGame: 1.35,
+    attackRating: 1.0, defenseRating: 1.0,
+    formLast5: 0.47,
+    homeFormLast5: 0.53,
+    awayFormLast5: 0.40,
+    cleanSheetRate: 0.30,
+    bttsRate: 0.55,
+    xgFor: 1.35, xgAgainst: 1.35,
+    shotsOnTargetPerGame: 3.5,
+    possessionPct: 50.0,
+  };
+}

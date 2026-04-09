@@ -1,0 +1,112 @@
+name: EPL Oracle
+
+on:
+  schedule:
+    # Picks alert: every Saturday at 08:00 UTC (before Premier League Saturday fixtures)
+    - cron: '0 8 * * 6'
+    # Recap alert: every Monday at 09:00 UTC (after weekend results)
+    - cron: '0 9 * * 1'
+    # Midweek picks: every Tuesday at 10:00 UTC (for midweek fixtures)
+    - cron: '0 10 * * 2'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Run mode'
+        required: true
+        default: 'picks'
+        type: choice
+        options:
+          - picks
+          - recap
+          - pipeline
+      gameweek:
+        description: 'Gameweek number (optional, defaults to current)'
+        required: false
+        type: string
+
+jobs:
+  epl-oracle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Determine run mode
+        id: mode
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "mode=${{ github.event.inputs.mode }}" >> $GITHUB_OUTPUT
+            echo "gameweek=${{ github.event.inputs.gameweek }}" >> $GITHUB_OUTPUT
+          else
+            # Determine mode from schedule
+            HOUR=$(date -u +%H)
+            DAY=$(date -u +%u)  # 1=Mon, 6=Sat
+            if [ "$DAY" = "1" ]; then
+              echo "mode=recap" >> $GITHUB_OUTPUT
+            else
+              echo "mode=picks" >> $GITHUB_OUTPUT
+            fi
+            echo "gameweek=" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run pipeline (predictions only)
+        if: steps.mode.outputs.mode == 'pipeline'
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          LOG_LEVEL: info
+          LOG_FORMAT: json
+          NODE_ENV: production
+          CACHE_DIR: ./cache
+          DB_PATH: ./data/epl_oracle.db
+        run: |
+          GW_ARG=""
+          if [ -n "${{ steps.mode.outputs.gameweek }}" ]; then
+            GW_ARG="-- --gw ${{ steps.mode.outputs.gameweek }}"
+          fi
+          npm run dev $GW_ARG
+
+      - name: Send picks alert
+        if: steps.mode.outputs.mode == 'picks'
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          LOG_LEVEL: info
+          LOG_FORMAT: json
+          NODE_ENV: production
+          CACHE_DIR: ./cache
+          DB_PATH: ./data/epl_oracle.db
+        run: |
+          GW_ARG=""
+          if [ -n "${{ steps.mode.outputs.gameweek }}" ]; then
+            GW_ARG="--gw ${{ steps.mode.outputs.gameweek }}"
+          fi
+          npm run dev -- --alert picks $GW_ARG
+
+      - name: Send recap alert
+        if: steps.mode.outputs.mode == 'recap'
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          LOG_LEVEL: info
+          LOG_FORMAT: json
+          NODE_ENV: production
+          CACHE_DIR: ./cache
+          DB_PATH: ./data/epl_oracle.db
+        run: |
+          GW_ARG=""
+          if [ -n "${{ steps.mode.outputs.gameweek }}" ]; then
+            GW_ARG="--gw ${{ steps.mode.outputs.gameweek }}"
+          fi
+          npm run dev -- --alert recap $GW_ARG

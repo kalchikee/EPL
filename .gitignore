@@ -1,0 +1,11 @@
+node_modules/
+dist/
+cache/
+data/*.db
+data/model/
+*.log
+.env
+.DS_Store
+Thumbs.db
+logs/
+*.js.map
