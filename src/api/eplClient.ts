@@ -274,25 +274,55 @@ function parseESPNEvent(event: ESPNEvent, defaultSeason: number): EPLMatch | nul
   };
 }
 
+// ─── Gameweek date range (approx) ────────────────────────────────────────────
+// EPL GW1 ≈ Aug 16 each season; each GW is ~7 days.
+
+function getGameweekDateRange(gw: number, season: number): { start: Date; end: Date } {
+  // GW1 start: third Saturday of August (approx Aug 16)
+  const gw1Start = new Date(`${season}-08-09`);
+  const offset = (gw - 1) * 7;
+  const start = new Date(gw1Start);
+  start.setDate(start.getDate() + offset);
+  const end = new Date(start);
+  end.setDate(end.getDate() + 8); // 8-day window covers Fri–Mon fixtures
+  return { start, end };
+}
+
 // ─── Gameweek schedule ────────────────────────────────────────────────────────
+// ESPN soccer uses date-based queries (dates=YYYYMMDD), not week numbers.
+// We scan each day in the GW window and collect all EPL matches.
 
 export async function fetchGameweekSchedule(gameweek: number, season: number): Promise<EPLMatch[]> {
-  // ESPN uses seasontype=2 for regular season, week number for gameweek
-  const url = `${ESPN_BASE}/scoreboard?seasontype=2&week=${gameweek}&dates=${season}&limit=30`;
-  try {
-    const data = await fetchWithRetry<ESPNScoreboardResponse>(url);
-    if (!data.events) return [];
-    const matches: EPLMatch[] = [];
-    for (const event of data.events) {
-      const match = parseESPNEvent(event, season);
-      if (match) matches.push(match);
+  const { start, end } = getGameweekDateRange(gameweek, season);
+  const matches: EPLMatch[] = [];
+  const seen = new Set<string>();
+
+  let current = new Date(start);
+  while (current <= end) {
+    const dateStr = current.toISOString().split('T')[0].replace(/-/g, '');
+    const url = `${ESPN_BASE}/scoreboard?dates=${dateStr}&limit=20`;
+    try {
+      const data = await fetchWithRetry<ESPNScoreboardResponse>(url);
+      if (data.events) {
+        for (const event of data.events) {
+          if (!seen.has(event.id)) {
+            seen.add(event.id);
+            const match = parseESPNEvent(event, season);
+            if (match) {
+              match.gameweek = gameweek; // tag with requested GW
+              matches.push(match);
+            }
+          }
+        }
+      }
+    } catch (err) {
+      logger.debug({ err, date: dateStr }, 'Failed to fetch scoreboard for date');
     }
-    logger.info({ gameweek, season, matches: matches.length }, 'Gameweek schedule fetched');
-    return matches;
-  } catch (err) {
-    logger.warn({ err, gameweek, season }, 'Failed to fetch gameweek schedule');
-    return [];
+    current.setDate(current.getDate() + 1);
   }
+
+  logger.info({ gameweek, season, matches: matches.length }, 'Gameweek schedule fetched');
+  return matches;
 }
 
 // Fetch matches for a date range
@@ -326,17 +356,35 @@ export async function fetchMatchesForDates(startDate: string, endDate: string): 
 }
 
 // ─── Current gameweek info ────────────────────────────────────────────────────
+// Derives the gameweek number from today's date relative to GW1 start.
 
 export async function getCurrentGameweekInfo(): Promise<{ gameweek: number; season: number }> {
   const season = getCurrentEPLSeason();
-  const url = `${ESPN_BASE}/scoreboard?limit=5`;
-  try {
-    const data = await fetchWithRetry<ESPNScoreboardResponse>(url, 3, true);
-    const gw = data.week?.number ?? 1;
-    return { gameweek: gw, season };
-  } catch {
-    return { gameweek: 1, season };
+
+  // Derive GW from calendar: GW1 ≈ Aug 9 of season year
+  const gw1Start = new Date(`${season}-08-09`);
+  const now = new Date();
+  const diffDays = Math.floor((now.getTime() - gw1Start.getTime()) / (1000 * 60 * 60 * 24));
+  const estimatedGw = Math.max(1, Math.min(38, Math.floor(diffDays / 7) + 1));
+
+  // Verify: scan ±2 GWs to find the one with upcoming/recent matches
+  for (let offset = 0; offset <= 2; offset++) {
+    for (const dir of [0, 1, -1]) {
+      const gw = Math.max(1, Math.min(38, estimatedGw + dir + offset));
+      const { start, end } = getGameweekDateRange(gw, season);
+      const tomorrow = new Date(now);
+      tomorrow.setDate(tomorrow.getDate() + 7);
+      // If this GW's window overlaps with [now-3d, now+7d], it's current
+      const windowStart = new Date(now);
+      windowStart.setDate(windowStart.getDate() - 3);
+      if (end >= windowStart && start <= tomorrow) {
+        logger.info({ estimatedGw: gw, season }, 'Current gameweek detected');
+        return { gameweek: gw, season };
+      }
+    }
   }
+
+  return { gameweek: estimatedGw, season };
 }
 
 // ─── Team stats from standings ────────────────────────────────────────────────
