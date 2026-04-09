@@ -556,8 +556,19 @@ function buildTeamStats(
   );
 
   const LEAGUE_AVG = 1.35;
+  // Home field advantage factors (same as monteCarlo.ts HOME_ADV)
+  const HOME_ATT_FACTOR = 1.18;
+  const HOME_DEF_FACTOR = 0.88;
+
   const attackRating  = Math.max(0.3, gfPg / LEAGUE_AVG);
   const defenseRating = Math.max(0.3, gaPg / LEAGUE_AVG);
+
+  // Home/away split ratings: teams score/concede differently at home vs away.
+  // Estimated from ESPN's combined stats using typical EPL home advantage ratios.
+  const homeAttackRating  = Math.max(0.3, attackRating  * HOME_ATT_FACTOR);
+  const homeDefenseRating = Math.max(0.3, defenseRating * HOME_DEF_FACTOR);
+  const awayAttackRating  = Math.max(0.3, attackRating  / HOME_ATT_FACTOR);
+  const awayDefenseRating = Math.max(0.3, defenseRating / HOME_DEF_FACTOR);
 
   // Form: blend prior form (derived from prior win%) with current form
   const priorForm = Math.min(1.0, (prior.gfPg - prior.gaPg + 1.35) / (1.35 * 2));
@@ -587,6 +598,10 @@ function buildTeamStats(
     goalsAgainstPerGame: gaPg,
     attackRating,
     defenseRating,
+    homeAttackRating,
+    homeDefenseRating,
+    awayAttackRating,
+    awayDefenseRating,
     formLast5,
     homeFormLast5: formLast5,
     awayFormLast5: formLast5 * 0.85,
@@ -608,6 +623,8 @@ function defaultTeamStats(abbr: string): EPLTeamStats {
     goalsFor: 27, goalsAgainst: 27, goalDifference: 0,
     goalsForPerGame: 1.35, goalsAgainstPerGame: 1.35,
     attackRating: 1.0, defenseRating: 1.0,
+    homeAttackRating: 1.18, homeDefenseRating: 0.88,
+    awayAttackRating: 0.85, awayDefenseRating: 1.14,
     formLast5: 0.47,
     homeFormLast5: 0.53,
     awayFormLast5: 0.40,

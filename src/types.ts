@@ -22,6 +22,11 @@ export interface EPLTeamStats {
   // Efficiency (attack/defense ratings for Poisson model)
   attackRating: number;        // relative to league avg (1.0 = avg)
   defenseRating: number;       // relative to league avg (1.0 = avg), lower = better
+  // Home/away specific attack/defense (v4.2)
+  homeAttackRating: number;    // attack rating from home games only
+  homeDefenseRating: number;   // defense rating (GA) from home games only
+  awayAttackRating: number;    // attack rating from away games only
+  awayDefenseRating: number;   // defense rating (GA) from away games only
   // Form (last 5 matches: W=3, D=1, L=0 → normalized to 0-1)
   formLast5: number;           // 0.0–1.0
   homeFormLast5: number;       // home-specific form
@@ -112,6 +117,12 @@ export interface FeatureVector {
   vegas_home_prob: number;       // vig-removed market home win probability
   vegas_draw_prob: number;       // vig-removed draw probability
   mc_home_win_prob: number;      // Monte Carlo home win probability (set at prediction time)
+
+  // Home/away split attack-defense ratings (v4.2)
+  home_att_home: number;         // home team attack rating from home games only
+  home_def_home: number;         // home team defense rating (GA) from home games only
+  away_att_away: number;         // away team attack rating from away games only
+  away_def_away: number;         // away team defense rating (GA) from away games only
 }
 
 // ─── Model outputs ────────────────────────────────────────────────────────────

@@ -1,20 +1,21 @@
 #!/usr/bin/env python3
 """
-EPL Oracle v4.1 — Historical Dataset Builder
-Downloads 5 seasons of EPL results from football-data.co.uk (free, no API key),
+EPL Oracle v4.2 — Historical Dataset Builder
+Downloads 10 seasons of EPL results from football-data.co.uk (free, no API key),
 reconstructs pre-match feature vectors using rolling team stats and Elo ratings
 as they would have looked at kick-off, then writes data/training_data.csv.
+
+Improvements over v4.1:
+  - 10 seasons instead of 5 (doubles training data)
+  - Exponential decay in rolling windows (recent games count more)
+  - Home/away split attack/defense ratings (4 new features)
+  - Multiple bookmaker average (B365, BW, VC, PS) for better odds signal
 
 Requirements:
   pip install pandas numpy requests
 
 Usage: python python/fetch_historical.py
-       python python/fetch_historical.py --seasons 3   # only last 3 seasons
-
-football-data.co.uk CSV columns used:
-  Date, HomeTeam, AwayTeam, FTHG, FTAG, FTR (H/D/A)
-  HST, AST (shots on target, when available)
-  B365H, B365D, B365A (Bet365 decimal odds, when available)
+       python python/fetch_historical.py --seasons 10
 """
 
 import argparse
@@ -23,7 +24,7 @@ import io
 import math
 import sys
 from collections import defaultdict, deque
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 
 try:
@@ -35,16 +36,18 @@ except ImportError as e:
     print("  Install with: pip install pandas numpy requests")
     sys.exit(1)
 
-# ─── Paths ─────────────────────────────────────────────────────────────────────
-
+# Paths
 SCRIPT_DIR = Path(__file__).parent
 ROOT_DIR   = SCRIPT_DIR.parent
 OUTPUT_PATH = ROOT_DIR / "data" / "training_data.csv"
 
-# ─── Seasons to fetch ─────────────────────────────────────────────────────────
-# football-data.co.uk code format: 2020-21 → "2021", url segment "2021/E0.csv"
-
+# 10 seasons of EPL data (football-data.co.uk code format)
 SEASONS = [
+    {"label": "2015-16", "year": 2015, "url_code": "1516"},
+    {"label": "2016-17", "year": 2016, "url_code": "1617"},
+    {"label": "2017-18", "year": 2017, "url_code": "1718"},
+    {"label": "2018-19", "year": 2018, "url_code": "1819"},
+    {"label": "2019-20", "year": 2019, "url_code": "1920"},
     {"label": "2020-21", "year": 2020, "url_code": "2021"},
     {"label": "2021-22", "year": 2021, "url_code": "2122"},
     {"label": "2022-23", "year": 2022, "url_code": "2223"},
@@ -54,53 +57,60 @@ SEASONS = [
 
 BASE_URL = "https://www.football-data.co.uk/mmz4281/{code}/E0.csv"
 
-# ─── Team name → abbreviation ─────────────────────────────────────────────────
-
 TEAM_MAP = {
-    "Arsenal":          "ARS",
-    "Aston Villa":      "AVL",
-    "Brentford":        "BRE",
-    "Brighton":         "BHA",
-    "Burnley":          "BUR",
-    "Chelsea":          "CHE",
-    "Crystal Palace":   "CRY",
-    "Everton":          "EVE",
-    "Fulham":           "FUL",
-    "Leeds":            "LEE",
-    "Leeds United":     "LEE",
-    "Leicester":        "LEI",
-    "Liverpool":        "LIV",
-    "Man City":         "MCI",
-    "Man United":       "MUN",
-    "Newcastle":        "NEW",
-    "Nott'm Forest":    "NFO",
-    "Nottm Forest":     "NFO",
-    "Nottingham Forest":"NFO",
-    "Southampton":      "SOU",
-    "Tottenham":        "TOT",
-    "Watford":          "WAT",
-    "West Ham":         "WHU",
-    "West Brom":        "WBA",
-    "Wolves":           "WOL",
-    "Bournemouth":      "BOU",
-    "Ipswich":          "IPS",
-    "Sheffield United": "SHU",
-    "Sheffield Utd":    "SHU",
-    "Norwich":          "NOR",
-    "Sunderland":       "SUN",
-    "Luton":            "LUT",
+    "Arsenal":           "ARS",
+    "Aston Villa":       "AVL",
+    "Brentford":         "BRE",
+    "Brighton":          "BHA",
+    "Burnley":           "BUR",
+    "Chelsea":           "CHE",
+    "Crystal Palace":    "CRY",
+    "Everton":           "EVE",
+    "Fulham":            "FUL",
+    "Hull":              "HUL",
+    "Huddersfield":      "HUD",
+    "Leeds":             "LEE",
+    "Leeds United":      "LEE",
+    "Leicester":         "LEI",
+    "Liverpool":         "LIV",
+    "Man City":          "MCI",
+    "Man United":        "MUN",
+    "Middlesbrough":     "MID",
+    "Newcastle":         "NEW",
+    "Nott'm Forest":     "NFO",
+    "Nottm Forest":      "NFO",
+    "Nottingham Forest": "NFO",
+    "Southampton":       "SOU",
+    "Stoke":             "STK",
+    "Swansea":           "SWA",
+    "Sunderland":        "SUN",
+    "Tottenham":         "TOT",
+    "Watford":           "WAT",
+    "West Ham":          "WHU",
+    "West Brom":         "WBA",
+    "Wolves":            "WOL",
+    "Bournemouth":       "BOU",
+    "Ipswich":           "IPS",
+    "Sheffield United":  "SHU",
+    "Sheffield Utd":     "SHU",
+    "Norwich":           "NOR",
+    "Luton":             "LUT",
+    "Cardiff":           "CAR",
 }
 
-# ─── Constants ─────────────────────────────────────────────────────────────────
-
+# Constants — must match monteCarlo.ts and eplClient.ts
 LEAGUE_AVG_GOALS = 1.35
-HOME_ADV_FACTOR  = 1.18   # must match monteCarlo.ts
 ELO_K            = 20
 ELO_HOME_ADV     = 75
 ELO_START        = 1500
-ELO_REGRESSION   = 0.70   # how much prior rating carries into next season
-ROLLING_WINDOW   = 10     # matches used for rolling attack/defense/form stats
-PRIOR_FADE       = 10     # same as eplClient.ts
+ELO_REGRESSION   = 0.70
+ROLLING_WINDOW   = 10
+PRIOR_FADE       = 10
+EXP_DECAY_ALPHA  = 0.30   # exponential decay: recent games count more
+
+# Home/away adjustment factors for prior estimation
+HOME_ATT_FACTOR  = 1.18   # home teams score ~18% more at home
+HOME_DEF_FACTOR  = 0.88   # home teams concede ~12% less at home
 
 FEATURE_NAMES = [
     "elo_diff", "attack_diff", "defense_diff", "goal_diff_diff",
@@ -111,9 +121,11 @@ FEATURE_NAMES = [
     "home_euro_fatigue", "away_euro_fatigue", "is_neutral",
     "lambda_home", "lambda_away",
     "vegas_home_prob", "vegas_draw_prob", "mc_home_win_prob",
+    # New v4.2 features: home/away split attack/defense
+    "home_att_home", "home_def_home", "away_att_away", "away_def_away",
 ]
 
-# ─── Download helpers ──────────────────────────────────────────────────────────
+# ── Download helpers ──────────────────────────────────────────────────────────
 
 def download_season(url_code: str, label: str) -> pd.DataFrame | None:
     url = BASE_URL.format(code=url_code)
@@ -122,17 +134,16 @@ def download_season(url_code: str, label: str) -> pd.DataFrame | None:
         resp = requests.get(url, timeout=20)
         resp.raise_for_status()
         df = pd.read_csv(io.StringIO(resp.text), on_bad_lines="skip", encoding="latin-1")
-        # Keep only rows with a valid result
         df = df.dropna(subset=["HomeTeam", "AwayTeam", "FTHG", "FTAG", "FTR"])
         df["FTHG"] = pd.to_numeric(df["FTHG"], errors="coerce")
         df["FTAG"] = pd.to_numeric(df["FTAG"], errors="coerce")
         df = df.dropna(subset=["FTHG", "FTAG"])
         df["FTHG"] = df["FTHG"].astype(int)
         df["FTAG"] = df["FTAG"].astype(int)
-        print(f"✓  {len(df)} matches")
+        print(f"OK  {len(df)} matches")
         return df
     except Exception as e:
-        print(f"✗  {e}")
+        print(f"FAIL  {e}")
         return None
 
 def parse_date(d: str) -> datetime | None:
@@ -143,7 +154,7 @@ def parse_date(d: str) -> datetime | None:
             continue
     return None
 
-# ─── Elo engine ────────────────────────────────────────────────────────────────
+# ── Elo engine ────────────────────────────────────────────────────────────────
 
 class EloEngine:
     def __init__(self):
@@ -173,79 +184,130 @@ class EloEngine:
         for team in list(self.ratings.keys()):
             self.ratings[team] = ELO_REGRESSION * self.ratings[team] + (1 - ELO_REGRESSION) * ELO_START
 
-# ─── Rolling team stats ────────────────────────────────────────────────────────
-# Tracks the last ROLLING_WINDOW matches for each team regardless of H/A.
+# ── Rolling stats with exponential decay ──────────────────────────────────────
 
 class RollingStats:
     def __init__(self):
+        # Overall rolling windows (home + away combined)
         self.gf:  dict[str, deque] = defaultdict(lambda: deque(maxlen=ROLLING_WINDOW))
         self.ga:  dict[str, deque] = defaultdict(lambda: deque(maxlen=ROLLING_WINDOW))
-        self.pts: dict[str, deque] = defaultdict(lambda: deque(maxlen=5))   # last-5 form
+        self.pts: dict[str, deque] = defaultdict(lambda: deque(maxlen=5))
         self.sot: dict[str, deque] = defaultdict(lambda: deque(maxlen=ROLLING_WINDOW))
         self.cs:  dict[str, deque] = defaultdict(lambda: deque(maxlen=ROLLING_WINDOW))
-        self.last_match: dict[str, datetime] = {}
-        # Home/away form separately
+        # Home-specific windows
+        self.h_gf: dict[str, deque] = defaultdict(lambda: deque(maxlen=ROLLING_WINDOW))
+        self.h_ga: dict[str, deque] = defaultdict(lambda: deque(maxlen=ROLLING_WINDOW))
+        # Away-specific windows
+        self.a_gf: dict[str, deque] = defaultdict(lambda: deque(maxlen=ROLLING_WINDOW))
+        self.a_ga: dict[str, deque] = defaultdict(lambda: deque(maxlen=ROLLING_WINDOW))
+        # Home/away form
         self.h_pts: dict[str, deque] = defaultdict(lambda: deque(maxlen=5))
         self.a_pts: dict[str, deque] = defaultdict(lambda: deque(maxlen=5))
-        # Table: cumulative per season
-        self.wins:   dict[str, int] = defaultdict(int)
-        self.draws:  dict[str, int] = defaultdict(int)
-        self.losses: dict[str, int] = defaultdict(int)
-        self.played: dict[str, int] = defaultdict(int)
-        self.gf_total: dict[str, int] = defaultdict(int)
-        self.ga_total: dict[str, int] = defaultdict(int)
+        # Table
+        self.wins:    dict[str, int] = defaultdict(int)
+        self.draws:   dict[str, int] = defaultdict(int)
+        self.losses:  dict[str, int] = defaultdict(int)
+        self.played:  dict[str, int] = defaultdict(int)
+        self.gf_tot:  dict[str, int] = defaultdict(int)
+        self.ga_tot:  dict[str, int] = defaultdict(int)
+        self.last_match: dict[str, datetime] = {}
 
     def reset_season(self):
-        self.wins.clear(); self.draws.clear(); self.losses.clear()
-        self.played.clear(); self.gf_total.clear(); self.ga_total.clear()
+        for d in [self.wins, self.draws, self.losses, self.played, self.gf_tot, self.ga_tot]:
+            d.clear()
 
-    def _avg(self, dq: deque, default: float) -> float:
-        return sum(dq) / len(dq) if dq else default
+    def _exp_avg(self, dq: deque, default: float = 0.0) -> float:
+        """Exponentially weighted average — recent games count more."""
+        if not dq:
+            return default
+        items = list(dq)
+        n = len(items)
+        alpha = EXP_DECAY_ALPHA
+        weights = [alpha * (1 - alpha) ** (n - 1 - i) for i in range(n)]
+        total_w = sum(weights)
+        return sum(w * v for w, v in zip(weights, items)) / total_w
+
+    # ── Overall ratings ────────────────────────────────────────────────────────
 
     def attack_rating(self, team: str, prior: dict) -> float:
         n = len(self.gf[team])
-        curr_gf = self._avg(self.gf[team], 0)
+        curr = self._exp_avg(self.gf[team], 0)
         prior_gf = prior.get("gfPg", LEAGUE_AVG_GOALS)
-        blended = (n * curr_gf + max(0, PRIOR_FADE - n) * prior_gf) / PRIOR_FADE
+        blended = (n * curr + max(0, PRIOR_FADE - n) * prior_gf) / PRIOR_FADE
         return max(0.3, blended / LEAGUE_AVG_GOALS)
 
     def defense_rating(self, team: str, prior: dict) -> float:
         n = len(self.ga[team])
-        curr_ga = self._avg(self.ga[team], 0)
+        curr = self._exp_avg(self.ga[team], 0)
         prior_ga = prior.get("gaPg", LEAGUE_AVG_GOALS)
-        blended = (n * curr_ga + max(0, PRIOR_FADE - n) * prior_ga) / PRIOR_FADE
+        blended = (n * curr + max(0, PRIOR_FADE - n) * prior_ga) / PRIOR_FADE
         return max(0.3, blended / LEAGUE_AVG_GOALS)
+
+    # ── Home/away split ratings (new in v4.2) ─────────────────────────────────
+
+    def home_attack_rating(self, team: str, prior: dict) -> float:
+        """Attack rating for home games only."""
+        n = len(self.h_gf[team])
+        curr = self._exp_avg(self.h_gf[team], 0)
+        prior_home_gf = prior.get("gfPg", LEAGUE_AVG_GOALS) * HOME_ATT_FACTOR
+        blended = (n * curr + max(0, PRIOR_FADE - n) * prior_home_gf) / PRIOR_FADE
+        return max(0.3, blended / LEAGUE_AVG_GOALS)
+
+    def home_defense_rating(self, team: str, prior: dict) -> float:
+        """Defense rating (GA) for home games only — lower = better."""
+        n = len(self.h_ga[team])
+        curr = self._exp_avg(self.h_ga[team], 0)
+        prior_home_ga = prior.get("gaPg", LEAGUE_AVG_GOALS) * HOME_DEF_FACTOR  # less GA at home
+        blended = (n * curr + max(0, PRIOR_FADE - n) * prior_home_ga) / PRIOR_FADE
+        return max(0.3, blended / LEAGUE_AVG_GOALS)
+
+    def away_attack_rating(self, team: str, prior: dict) -> float:
+        """Attack rating for away games only."""
+        n = len(self.a_gf[team])
+        curr = self._exp_avg(self.a_gf[team], 0)
+        prior_away_gf = prior.get("gfPg", LEAGUE_AVG_GOALS) / HOME_ATT_FACTOR
+        blended = (n * curr + max(0, PRIOR_FADE - n) * prior_away_gf) / PRIOR_FADE
+        return max(0.3, blended / LEAGUE_AVG_GOALS)
+
+    def away_defense_rating(self, team: str, prior: dict) -> float:
+        """Defense rating (GA) for away games only — higher = worse defense."""
+        n = len(self.a_ga[team])
+        curr = self._exp_avg(self.a_ga[team], 0)
+        prior_away_ga = prior.get("gaPg", LEAGUE_AVG_GOALS) / HOME_DEF_FACTOR  # more GA away
+        blended = (n * curr + max(0, PRIOR_FADE - n) * prior_away_ga) / PRIOR_FADE
+        return max(0.3, blended / LEAGUE_AVG_GOALS)
+
+    # ── Form / misc ───────────────────────────────────────────────────────────
 
     def form(self, team: str, prior: dict) -> float:
         n = len(self.pts[team])
-        curr = self._avg(self.pts[team], 0) / 3.0
+        curr = self._exp_avg(self.pts[team], 0) / 3.0
         prior_form = min(1.0, (prior.get("gfPg", LEAGUE_AVG_GOALS) -
                                 prior.get("gaPg", LEAGUE_AVG_GOALS) + 1.35) / (1.35 * 2))
         blended = (n * curr + max(0, PRIOR_FADE - n) * prior_form) / PRIOR_FADE
         return max(0.0, min(1.0, blended))
 
     def home_form(self, team: str) -> float:
-        return self._avg(self.h_pts[team], 0) / 3.0
+        return self._exp_avg(self.h_pts[team], 0) / 3.0
 
     def away_form(self, team: str) -> float:
-        return self._avg(self.a_pts[team], 0) / 3.0
+        return self._exp_avg(self.a_pts[team], 0) / 3.0
 
     def sot_pg(self, team: str) -> float:
-        return self._avg(self.sot[team], 3.5)
+        return self._exp_avg(self.sot[team], 3.5)
 
     def cs_rate(self, team: str, prior: dict) -> float:
         n = len(self.cs[team])
-        curr = self._avg(self.cs[team], 0)
+        curr = self._exp_avg(self.cs[team], 0)
         prior_cs = prior.get("csRate", 0.28)
         blended = (n * curr + max(0, PRIOR_FADE - n) * prior_cs) / PRIOR_FADE
         return max(0.0, min(1.0, blended))
 
     def position(self, team: str, all_teams: list) -> int:
-        # Sort all teams by points (desc), GD (desc), GF (desc)
         def sort_key(t):
-            p = self.wins[t] * 3 + self.draws[t]
-            gd = self.gf_total[t] - self.ga_total[t]
-            return (-p, -gd, -self.gf_total[t])
+            p  = self.wins[t] * 3 + self.draws[t]
+            gd = self.gf_tot[t] - self.ga_tot[t]
+            return (-p, -gd, -self.gf_tot[t])
         ranked = sorted(all_teams, key=sort_key)
         try:
             return ranked.index(team) + 1
@@ -264,25 +326,29 @@ class RollingStats:
         h_pts = 3 if result == "H" else 1 if result == "D" else 0
         a_pts = 3 if result == "A" else 1 if result == "D" else 0
 
+        # Overall windows
         self.gf[home].append(hg); self.ga[home].append(ag)
         self.gf[away].append(ag); self.ga[away].append(hg)
         self.pts[home].append(h_pts); self.pts[away].append(a_pts)
-        self.h_pts[home].append(h_pts); self.a_pts[away].append(a_pts)
         self.sot[home].append(h_sot); self.sot[away].append(a_sot)
         self.cs[home].append(1 if ag == 0 else 0)
         self.cs[away].append(1 if hg == 0 else 0)
-
+        # Home/away split windows
+        self.h_gf[home].append(hg); self.h_ga[home].append(ag)
+        self.a_gf[away].append(ag); self.a_ga[away].append(hg)
+        # Form
+        self.h_pts[home].append(h_pts); self.a_pts[away].append(a_pts)
+        # Table
         self.played[home] += 1; self.played[away] += 1
-        self.gf_total[home] += hg; self.ga_total[home] += ag
-        self.gf_total[away] += ag; self.ga_total[away] += hg
-        if result == "H":  self.wins[home]  += 1; self.losses[away] += 1
-        elif result == "A":self.wins[away]  += 1; self.losses[home] += 1
-        else:              self.draws[home] += 1; self.draws[away]  += 1
-
+        self.gf_tot[home] += hg; self.ga_tot[home] += ag
+        self.gf_tot[away] += ag; self.ga_tot[away] += hg
+        if result == "H":   self.wins[home]   += 1; self.losses[away] += 1
+        elif result == "A": self.wins[away]   += 1; self.losses[home] += 1
+        else:               self.draws[home]  += 1; self.draws[away]  += 1
         self.last_match[home] = match_date
         self.last_match[away] = match_date
 
-# ─── Odds helpers ──────────────────────────────────────────────────────────────
+# ── Odds helpers ───────────────────────────────────────────────────────────────
 
 def decimal_to_prob(odds: float) -> float:
     return 1.0 / odds if odds > 1 else 0.0
@@ -293,7 +359,39 @@ def remove_vig(h: float, d: float, a: float):
         return (0.45, 0.27, 0.28)
     return (h / total, d / total, a / total)
 
-# ─── Poisson PMF ──────────────────────────────────────────────────────────────
+def get_bookmaker_avg(row) -> tuple[float, float, float]:
+    """Average multiple bookmakers' implied probabilities (after vig removal)."""
+    books = [
+        ("B365H", "B365D", "B365A"),
+        ("BWH",   "BWD",   "BWA"),
+        ("VCH",   "VCD",   "VCA"),
+        ("PSH",   "PSD",   "PSA"),
+        ("WHH",   "WHD",   "WHA"),
+    ]
+    valid_probs = []
+    for hk, dk, ak in books:
+        try:
+            h = float(row.get(hk) or 0)
+            d = float(row.get(dk) or 0)
+            a = float(row.get(ak) or 0)
+            if h > 1 and d > 1 and a > 1:
+                ph = decimal_to_prob(h)
+                pd_ = decimal_to_prob(d)
+                pa = decimal_to_prob(a)
+                vp, vd, va = remove_vig(ph, pd_, pa)
+                valid_probs.append((vp, vd, va))
+        except (TypeError, ValueError):
+            continue
+
+    if not valid_probs:
+        return (0.0, 0.0, 0.0)
+
+    avg_h = float(np.mean([p[0] for p in valid_probs]))
+    avg_d = float(np.mean([p[1] for p in valid_probs]))
+    avg_a = float(np.mean([p[2] for p in valid_probs]))
+    return (avg_h, avg_d, avg_a)
+
+# ── Poisson / Dixon-Coles ──────────────────────────────────────────────────────
 
 def poisson_pmf(k: int, lam: float) -> float:
     if lam <= 0:
@@ -301,7 +399,7 @@ def poisson_pmf(k: int, lam: float) -> float:
     log_p = k * math.log(lam) - lam - sum(math.log(i) for i in range(1, k + 1))
     return math.exp(log_p)
 
-RHO = -0.15  # Dixon-Coles
+RHO = -0.15
 
 def dc_tau(h: int, a: int, lh: float, la: float) -> float:
     if h == 0 and a == 0: return 1 - lh * la * RHO
@@ -325,7 +423,7 @@ def poisson_probs(lh: float, la: float, max_g: int = 8):
         hw /= total; dw /= total; aw /= total
     return max(0.01, hw), max(0.01, dw), max(0.01, aw)
 
-# ─── Prior stats (must match eplClient.ts PRIOR_STATS_2024_25) ────────────────
+# ── Prior stats ────────────────────────────────────────────────────────────────
 
 PRIOR_STATS: dict[str, dict] = {
     "LIV": {"gfPg": 2.34, "gaPg": 0.97, "csRate": 0.45},
@@ -348,7 +446,6 @@ PRIOR_STATS: dict[str, dict] = {
     "LEE": {"gfPg": 1.27, "gaPg": 1.57, "csRate": 0.22},
     "BUR": {"gfPg": 1.16, "gaPg": 1.62, "csRate": 0.21},
     "SUN": {"gfPg": 1.13, "gaPg": 1.60, "csRate": 0.22},
-    # Teams from earlier seasons
     "LEI": {"gfPg": 1.18, "gaPg": 1.79, "csRate": 0.18},
     "SOU": {"gfPg": 0.76, "gaPg": 2.21, "csRate": 0.13},
     "IPS": {"gfPg": 0.97, "gaPg": 1.84, "csRate": 0.18},
@@ -357,16 +454,21 @@ PRIOR_STATS: dict[str, dict] = {
     "WBA": {"gfPg": 0.87, "gaPg": 1.66, "csRate": 0.21},
     "SHU": {"gfPg": 0.76, "gaPg": 2.08, "csRate": 0.13},
     "LUT": {"gfPg": 0.89, "gaPg": 1.76, "csRate": 0.18},
+    # Additional older teams
+    "HUL": {"gfPg": 1.05, "gaPg": 1.74, "csRate": 0.21},
+    "HUD": {"gfPg": 0.89, "gaPg": 1.71, "csRate": 0.18},
+    "STK": {"gfPg": 1.08, "gaPg": 1.66, "csRate": 0.22},
+    "SWA": {"gfPg": 1.11, "gaPg": 1.58, "csRate": 0.24},
+    "MID": {"gfPg": 1.00, "gaPg": 1.58, "csRate": 0.24},
+    "CAR": {"gfPg": 0.89, "gaPg": 1.76, "csRate": 0.18},
 }
 
 DEFAULT_PRIOR = {"gfPg": LEAGUE_AVG_GOALS, "gaPg": LEAGUE_AVG_GOALS, "csRate": 0.28}
 
-# ─── Main ─────────────────────────────────────────────────────────────────────
+# ── GW date approximation ─────────────────────────────────────────────────────
 
 def build_gameweek_map(df: pd.DataFrame) -> dict:
-    """Assign approximate gameweek numbers by sorting matches by date."""
     dates = sorted(df["parsed_date"].dropna().unique())
-    # Group dates into ~10 GW clusters (10 games per GW across ~7 days)
     gw_map = {}
     gw = 1
     prev_date = None
@@ -377,32 +479,32 @@ def build_gameweek_map(df: pd.DataFrame) -> dict:
         prev_date = d
     return gw_map
 
-def run(num_seasons: int = 5):
+# ── Main ──────────────────────────────────────────────────────────────────────
+
+def run(num_seasons: int = 10):
     seasons_to_use = SEASONS[-num_seasons:]
     print(f"\n[INFO] Fetching {len(seasons_to_use)} EPL seasons from football-data.co.uk\n")
 
     all_rows = []
-    elo    = EloEngine()
-    stats  = RollingStats()
+    elo   = EloEngine()
+    stats = RollingStats()
 
     for season_meta in seasons_to_use:
         label    = season_meta["label"]
         year     = season_meta["year"]
         url_code = season_meta["url_code"]
 
-        print(f"── Season {label} ──")
+        print(f"-- Season {label} --")
 
         df = download_season(url_code, label)
         if df is None:
             print(f"  Skipping {label}")
             continue
 
-        # Parse dates
         df["parsed_date"] = df["Date"].apply(parse_date)
         df = df.dropna(subset=["parsed_date"])
         df = df.sort_values("parsed_date").reset_index(drop=True)
 
-        # Map team names to abbreviations
         df["home_abbr"] = df["HomeTeam"].map(TEAM_MAP)
         df["away_abbr"] = df["AwayTeam"].map(TEAM_MAP)
         unmapped = df[df["home_abbr"].isna() | df["away_abbr"].isna()]["HomeTeam"].unique()
@@ -410,16 +512,12 @@ def run(num_seasons: int = 5):
             print(f"  [WARN] Unmapped teams: {list(unmapped)[:5]}")
         df = df.dropna(subset=["home_abbr", "away_abbr"])
 
-        # Regress Elo at season start
         elo.regress_season()
         stats.reset_season()
 
-        # Build gameweek approximation
-        gw_map = build_gameweek_map(df)
-
+        gw_map    = build_gameweek_map(df)
         all_teams = list(df["home_abbr"].unique())
 
-        skipped = 0
         for _, row in df.iterrows():
             home = row["home_abbr"]
             away = row["away_abbr"]
@@ -429,20 +527,25 @@ def run(num_seasons: int = 5):
             date = row["parsed_date"]
             gw   = gw_map.get(date, 0)
 
-            # ── Pre-match features (computed BEFORE updating stats) ────────────
-
             prior_h = PRIOR_STATS.get(home, DEFAULT_PRIOR)
             prior_a = PRIOR_STATS.get(away, DEFAULT_PRIOR)
 
+            # Overall ratings
             att_h = stats.attack_rating(home, prior_h)
             att_a = stats.attack_rating(away, prior_a)
             def_h = stats.defense_rating(home, prior_h)
             def_a = stats.defense_rating(away, prior_a)
 
-            gf_h  = att_h * LEAGUE_AVG_GOALS
-            gf_a  = att_a * LEAGUE_AVG_GOALS
-            ga_h  = def_h * LEAGUE_AVG_GOALS
-            ga_a  = def_a * LEAGUE_AVG_GOALS
+            gf_h = att_h * LEAGUE_AVG_GOALS
+            gf_a = att_a * LEAGUE_AVG_GOALS
+            ga_h = def_h * LEAGUE_AVG_GOALS
+            ga_a = def_a * LEAGUE_AVG_GOALS
+
+            # Home/away split ratings (new features)
+            h_att_home = stats.home_attack_rating(home, prior_h)    # home team at home
+            h_def_home = stats.home_defense_rating(home, prior_h)   # home team def at home
+            a_att_away = stats.away_attack_rating(away, prior_a)    # away team away
+            a_def_away = stats.away_defense_rating(away, prior_a)   # away team def away
 
             form_h = stats.form(home, prior_h)
             form_a = stats.form(away, prior_a)
@@ -461,40 +564,30 @@ def run(num_seasons: int = 5):
             rest_h = stats.rest_days(home, date)
             rest_a = stats.rest_days(away, date)
 
-            lam_h = LEAGUE_AVG_GOALS * att_h * def_a * HOME_ADV_FACTOR
-            lam_a = LEAGUE_AVG_GOALS * att_a * def_h
+            # Updated lambdas using home/away specific ratings (no HOME_ADV_FACTOR needed)
+            # home scores: home team's HOME attack vs away team's AWAY defense
+            # away scores: away team's AWAY attack vs home team's HOME defense
+            lam_h = LEAGUE_AVG_GOALS * h_att_home * a_def_away
+            lam_a = LEAGUE_AVG_GOALS * a_att_away * h_def_home
             lam_h = max(0.20, min(4.5, lam_h))
             lam_a = max(0.20, min(4.5, lam_a))
 
             mc_h, mc_d, mc_a = poisson_probs(lam_h, lam_a)
 
-            # Vegas odds (Bet365 if available)
-            veg_h = veg_d = veg_a = 0.0
-            try:
-                b365h = float(row.get("B365H", 0) or 0)
-                b365d = float(row.get("B365D", 0) or 0)
-                b365a = float(row.get("B365A", 0) or 0)
-                if b365h > 1 and b365d > 1 and b365a > 1:
-                    raw_h = decimal_to_prob(b365h)
-                    raw_d = decimal_to_prob(b365d)
-                    raw_a = decimal_to_prob(b365a)
-                    veg_h, veg_d, veg_a = remove_vig(raw_h, raw_d, raw_a)
-            except (TypeError, ValueError):
-                pass
+            # Multiple bookmakers average
+            veg_h, veg_d, veg_a = get_bookmaker_avg(row)
 
-            # Shots on target (if column exists)
+            # Shots on target
             try:
                 h_sot_val = float(row.get("HST", 0) or 0)
                 a_sot_val = float(row.get("AST", 0) or 0)
             except (TypeError, ValueError):
                 h_sot_val = a_sot_val = 3.5
 
-            # ── Assemble feature vector ────────────────────────────────────────
-
             fv = {
                 "elo_diff":              elo.diff(home, away),
                 "attack_diff":           att_h - att_a,
-                "defense_diff":          def_a - def_h,   # positive = home better def
+                "defense_diff":          def_a - def_h,
                 "goal_diff_diff":        (gf_h - ga_h) - (gf_a - ga_a),
                 "goals_for_diff":        gf_h - gf_a,
                 "goals_against_diff":    ga_h - ga_a,
@@ -504,7 +597,7 @@ def run(num_seasons: int = 5):
                 "away_form":             aform,
                 "position_diff":         pos_h - pos_a,
                 "shots_on_target_diff":  sot_h - sot_a,
-                "possession_diff":       0.0,   # not in simple CSV
+                "possession_diff":       0.0,
                 "clean_sheet_diff":      cs_h - cs_a,
                 "rest_days_diff":        rest_h - rest_a,
                 "home_short_rest":       1 if rest_h <= 3 else 0,
@@ -517,9 +610,14 @@ def run(num_seasons: int = 5):
                 "vegas_home_prob":       veg_h,
                 "vegas_draw_prob":       veg_d,
                 "mc_home_win_prob":      mc_h,
+                # New v4.2 features
+                "home_att_home":         h_att_home,
+                "home_def_home":         h_def_home,
+                "away_att_away":         a_att_away,
+                "away_def_away":         a_def_away,
             }
 
-            outcome = "home" if ftr == "H" else "draw" if ftr == "D" else "away"
+            outcome  = "home" if ftr == "H" else "draw" if ftr == "D" else "away"
             match_id = f"{year}-{date.strftime('%Y%m%d')}-{home}-{away}"
 
             all_rows.append({
@@ -536,7 +634,7 @@ def run(num_seasons: int = 5):
                 "away_win_label": 1 if outcome == "away" else 0,
             })
 
-            # ── Update stats (AFTER building features) ─────────────────────────
+            # Update stats AFTER building features (no lookahead bias)
             elo.update(home, away, hg, ag)
             stats.update(home, away, hg, ag, h_sot_val, a_sot_val, date)
 
@@ -547,11 +645,9 @@ def run(num_seasons: int = 5):
         n = len(season_rows)
         print(f"  Processed {n} matches  H:{h/n*100:.0f}%  D:{d/n*100:.0f}%  A:{a/n*100:.0f}%")
 
-    # ── Write CSV ──────────────────────────────────────────────────────────────
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     header = FEATURE_NAMES + ["match_id", "gameweek", "season", "home_team", "away_team",
                                "match_date", "actual_outcome", "home_win_label", "draw_label", "away_win_label"]
-
     with open(OUTPUT_PATH, "w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=header)
         writer.writeheader()
@@ -569,7 +665,7 @@ def run(num_seasons: int = 5):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--seasons", type=int, default=5,
-                        help="Number of most recent seasons to fetch (default: 5)")
+    parser.add_argument("--seasons", type=int, default=10,
+                        help="Number of most recent seasons to fetch (default: 10)")
     args = parser.parse_args()
     run(num_seasons=min(args.seasons, len(SEASONS)))

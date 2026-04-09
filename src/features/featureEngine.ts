@@ -96,13 +96,23 @@ export async function computeFeatures(
   const isNeutral = match.venueName.toLowerCase().includes('wembley') ||
     match.venueName.toLowerCase().includes('neutral') ? 1 : 0;
 
-  // ── Poisson lambdas (computed by monteCarlo using attack/defense ratings) ──
-  // These will be set by the Monte Carlo engine after feature computation.
-  const LEAGUE_AVG_GOALS = 1.35;
-  const HOME_ADV = 1.18; // EPL home field advantage factor
+  // ── Home/away split ratings (v4.2) ────────────────────────────────────────
+  // Use venue-specific attack/defense for more accurate Poisson lambdas.
+  // home team's attack at home vs away team's defense when playing away.
+  const homeAttHome = isNeutral ? home.attackRating : home.homeAttackRating;
+  const homeDefHome = isNeutral ? home.defenseRating : home.homeDefenseRating;
+  const awayAttAway = isNeutral ? away.attackRating : away.awayAttackRating;
+  const awayDefAway = isNeutral ? away.defenseRating : away.awayDefenseRating;
 
-  const lambdaHome = LEAGUE_AVG_GOALS * home.attackRating * away.defenseRating * (isNeutral ? 1.0 : HOME_ADV);
-  const lambdaAway = LEAGUE_AVG_GOALS * away.attackRating * home.defenseRating;
+  // ── Poisson lambdas: venue-specific (no HOME_ADV multiplier — it's in split stats) ──
+  const LEAGUE_AVG_GOALS = 1.35;
+
+  const lambdaHome = Math.max(0.2, Math.min(4.5,
+    LEAGUE_AVG_GOALS * homeAttHome * awayDefAway,
+  ));
+  const lambdaAway = Math.max(0.2, Math.min(4.5,
+    LEAGUE_AVG_GOALS * awayAttAway * homeDefHome,
+  ));
 
   logger.debug({
     home: homeAbbr, away: awayAbbr,
@@ -136,6 +146,11 @@ export async function computeFeatures(
     vegas_home_prob: 0,    // filled after odds lookup
     vegas_draw_prob: 0,    // filled after odds lookup
     mc_home_win_prob: 0,   // filled after Monte Carlo
+    // Home/away split features (v4.2)
+    home_att_home: homeAttHome,
+    home_def_home: homeDefHome,
+    away_att_away: awayAttAway,
+    away_def_away: awayDefAway,
   };
 }
 
@@ -147,6 +162,8 @@ function defaultStats(abbr: string): EPLTeamStats {
     goalsFor: 27, goalsAgainst: 27, goalDifference: 0,
     goalsForPerGame: 1.35, goalsAgainstPerGame: 1.35,
     attackRating: 1.0, defenseRating: 1.0,
+    homeAttackRating: 1.18, homeDefenseRating: 0.88,
+    awayAttackRating: 0.85, awayDefenseRating: 1.14,
     formLast5: 0.47,
     homeFormLast5: 0.53,
     awayFormLast5: 0.40,
