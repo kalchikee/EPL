@@ -154,6 +154,10 @@ export async function computeFeatures(
     away_def_away: awayDefAway,
     // Head-to-head (v4.2) — loaded from data/h2h_lookup.json
     ...getH2HFeatures(homeAbbr, awayAbbr),
+    // v4.3 features — defaulted at inference time (no live data source yet)
+    line_movement_home: 0,    // filled from odds API if closing lines available
+    corners_diff: 0,          // no live corners data; neutral default
+    referee_home_bias: 0,     // filled from referee_lookup.json if ref is known
   };
 }
 

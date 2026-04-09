@@ -53,7 +53,13 @@ FEATURE_NAMES = [
     "home_att_home", "home_def_home", "away_att_away", "away_def_away",
     # v4.2: head-to-head
     "h2h_home_win_rate", "h2h_goal_diff",
+    # v4.3: closing line + corners + referee
+    "line_movement_home", "corners_diff", "referee_home_bias",
 ]
+
+# Time-decay weight: recent seasons matter more (0.85^(2024-season))
+# 2024-25 → weight 1.0, 2023-24 → 0.85, 2022-23 → 0.72, ..., 2015-16 → 0.27
+SEASON_DECAY = 0.85
 
 
 def serialize_tree(estimator) -> dict:
@@ -121,8 +127,17 @@ def train():
     X = df[FEATURE_NAMES].fillna(0.0).values
     y = df["actual_outcome"].values
 
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.20, random_state=42, stratify=y
+    # Time-weighted training: recent seasons count more (0.85^(max_season - season))
+    max_season = int(df["season"].max())
+    sample_weights = df["season"].apply(
+        lambda s: SEASON_DECAY ** (max_season - int(s))
+    ).values
+    print(f"[INFO] Sample weights: season {max_season} → 1.00, "
+          f"season {max_season - 3} → {SEASON_DECAY**3:.2f}, "
+          f"season {max_season - 9} → {SEASON_DECAY**9:.2f}")
+
+    X_train, X_test, y_train, y_test, w_train, w_test = train_test_split(
+        X, y, sample_weights, test_size=0.20, random_state=42, stratify=y
     )
 
     # Standardize features
@@ -142,7 +157,7 @@ def train():
         max_features="sqrt",    # feature subsampling per split
         random_state=42,
     )
-    model.fit(X_train_s, y_train)
+    model.fit(X_train_s, y_train, sample_weight=w_train)
 
     # ── Cross-validation ──────────────────────────────────────────────────────
     cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
@@ -182,6 +197,8 @@ def train():
 
     # GBM model as serialized trees for TypeScript inference
     gbm_data = serialize_gbm(model, scaler, classes, X_all_s)
+    # Update version in serialized model
+    gbm_data["version"] = "4.3.0"
     with open(MODEL_DIR / "gbm_model.json", "w") as f:
         json.dump(gbm_data, f, separators=(",", ":"))  # compact JSON
     print(f"[OK] GBM saved ({len(gbm_data['trees'])} stages x {gbm_data['n_classes']} trees)")
@@ -207,7 +224,7 @@ def train():
     # Metadata
     seasons = sorted(df["season"].unique().tolist())
     meta = {
-        "version":           "4.2.0",
+        "version":           "4.3.0",
         "model_type":        "GradientBoosting",
         "train_seasons":     f"{seasons[0]}-{seasons[-1]}",
         "avg_brier":         avg_brier,

@@ -1,14 +1,14 @@
 {
-  "version": "4.2.0",
+  "version": "4.3.0",
   "model_type": "GradientBoosting",
   "train_seasons": "2015-2024",
-  "avg_brier": 0.1899551786717584,
-  "avg_accuracy": 0.5486842105263158,
-  "cv_accuracy_mean": 0.5444736842105262,
-  "cv_accuracy_std": 0.010637569963898828,
-  "n_features": 31,
+  "avg_brier": 0.18944910420289926,
+  "avg_accuracy": 0.5631578947368421,
+  "cv_accuracy_mean": 0.541578947368421,
+  "cv_accuracy_std": 0.007424597884034663,
+  "n_features": 34,
   "n_train_samples": 3040,
   "n_test_samples": 760,
   "n_total_samples": 3800,
-  "trained_at": "2026-04-09T14:57:43.124589"
+  "trained_at": "2026-04-09T15:10:02.156340"
 }

@@ -49,6 +49,10 @@ export const FEATURE_NAMES = [
   // v4.2 head-to-head features
   'h2h_home_win_rate',
   'h2h_goal_diff',
+  // v4.3 closing line + corners + referee
+  'line_movement_home',
+  'corners_diff',
+  'referee_home_bias',
 ] as const;
 
 // ─── GBM serialization types ──────────────────────────────────────────────────

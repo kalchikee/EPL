@@ -127,6 +127,11 @@ export interface FeatureVector {
   // Head-to-head history (v4.2)
   h2h_home_win_rate: number;     // fraction of last 5 meetings where home team won
   h2h_goal_diff: number;         // average (home goals - away goals) in last 5 meetings
+
+  // Closing line + referee (v4.3)
+  line_movement_home: number;    // closing prob - opening prob (sharp money signal)
+  corners_diff: number;          // home corners/game - away corners/game (rolling)
+  referee_home_bias: number;     // referee's home win rate above EPL average (0 if unknown)
 }
 
 // ─── Model outputs ────────────────────────────────────────────────────────────

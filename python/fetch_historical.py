@@ -126,6 +126,8 @@ FEATURE_NAMES = [
     "home_att_home", "home_def_home", "away_att_away", "away_def_away",
     # v4.2: head-to-head history
     "h2h_home_win_rate", "h2h_goal_diff",
+    # v4.3: closing line signal + corners + referee bias
+    "line_movement_home", "corners_diff", "referee_home_bias",
 ]
 
 # EPL historical home win rate (default for teams with no H2H history)
@@ -210,6 +212,8 @@ class RollingStats:
         # Home/away form
         self.h_pts: dict[str, deque] = defaultdict(lambda: deque(maxlen=5))
         self.a_pts: dict[str, deque] = defaultdict(lambda: deque(maxlen=5))
+        # Corners per game
+        self.corners: dict[str, deque] = defaultdict(lambda: deque(maxlen=ROLLING_WINDOW))
         # Table
         self.wins:    dict[str, int] = defaultdict(int)
         self.draws:   dict[str, int] = defaultdict(int)
@@ -303,6 +307,9 @@ class RollingStats:
     def sot_pg(self, team: str) -> float:
         return self._exp_avg(self.sot[team], 3.5)
 
+    def corners_pg(self, team: str) -> float:
+        return self._exp_avg(self.corners[team], 5.0)
+
     def cs_rate(self, team: str, prior: dict) -> float:
         n = len(self.cs[team])
         curr = self._exp_avg(self.cs[team], 0)
@@ -328,7 +335,8 @@ class RollingStats:
         return max(0, (match_date - last).days)
 
     def update(self, home: str, away: str, hg: int, ag: int,
-               h_sot: float, a_sot: float, match_date: datetime):
+               h_sot: float, a_sot: float, match_date: datetime,
+               h_corners: float = 5.0, a_corners: float = 5.0):
         result = "H" if hg > ag else "D" if hg == ag else "A"
         h_pts = 3 if result == "H" else 1 if result == "D" else 0
         a_pts = 3 if result == "A" else 1 if result == "D" else 0
@@ -352,6 +360,8 @@ class RollingStats:
         if result == "H":   self.wins[home]   += 1; self.losses[away] += 1
         elif result == "A": self.wins[away]   += 1; self.losses[home] += 1
         else:               self.draws[home]  += 1; self.draws[away]  += 1
+        self.corners[home].append(h_corners)
+        self.corners[away].append(a_corners)
         self.last_match[home] = match_date
         self.last_match[away] = match_date
 
@@ -367,7 +377,7 @@ def remove_vig(h: float, d: float, a: float):
     return (h / total, d / total, a / total)
 
 def get_bookmaker_avg(row) -> tuple[float, float, float]:
-    """Average multiple bookmakers' implied probabilities (after vig removal)."""
+    """Average multiple opening bookmakers' implied probabilities (after vig removal)."""
     books = [
         ("B365H", "B365D", "B365A"),
         ("BWH",   "BWD",   "BWA"),
@@ -397,6 +407,33 @@ def get_bookmaker_avg(row) -> tuple[float, float, float]:
     avg_d = float(np.mean([p[1] for p in valid_probs]))
     avg_a = float(np.mean([p[2] for p in valid_probs]))
     return (avg_h, avg_d, avg_a)
+
+def get_closing_avg(row) -> tuple[float, float, float]:
+    """Market-average CLOSING odds (AvgCH/AvgCD/AvgCA) — sharper than opening lines."""
+    try:
+        ch = float(row.get("AvgCH") or 0)
+        cd = float(row.get("AvgCD") or 0)
+        ca = float(row.get("AvgCA") or 0)
+        if ch > 1 and cd > 1 and ca > 1:
+            ph = decimal_to_prob(ch)
+            pd_ = decimal_to_prob(cd)
+            pa = decimal_to_prob(ca)
+            return remove_vig(ph, pd_, pa)
+    except (TypeError, ValueError):
+        pass
+    # Fallback: try Avg (opening market average)
+    try:
+        oh = float(row.get("AvgH") or 0)
+        od = float(row.get("AvgD") or 0)
+        oa = float(row.get("AvgA") or 0)
+        if oh > 1 and od > 1 and oa > 1:
+            ph = decimal_to_prob(oh)
+            pd_ = decimal_to_prob(od)
+            pa = decimal_to_prob(oa)
+            return remove_vig(ph, pd_, pa)
+    except (TypeError, ValueError):
+        pass
+    return (0.0, 0.0, 0.0)
 
 # ── Poisson / Dixon-Coles ──────────────────────────────────────────────────────
 
@@ -497,6 +534,8 @@ def run(num_seasons: int = 10):
     stats = RollingStats()
     # H2H records: key = frozenset({team1, team2}), persists across all seasons
     h2h_records: dict = defaultdict(list)  # {(team_a, team_b): [{home, away, hg, ag, date}]}
+    # Referee home bias tracking: ref_name -> {home_wins, total}
+    referee_stats: dict[str, dict] = defaultdict(lambda: {"home_wins": 0, "total": 0})
 
     for season_meta in seasons_to_use:
         label    = season_meta["label"]
@@ -583,8 +622,24 @@ def run(num_seasons: int = 10):
 
             mc_h, mc_d, mc_a = poisson_probs(lam_h, lam_a)
 
-            # Multiple bookmakers average
-            veg_h, veg_d, veg_a = get_bookmaker_avg(row)
+            # Opening bookmaker average (B365, BW, VC, PS, WH)
+            opening_h, opening_d, opening_a = get_bookmaker_avg(row)
+
+            # Closing market average (AvgCH/CD/CA) — sharper than opening lines
+            closing_h, closing_d, closing_a = get_closing_avg(row)
+
+            # Use closing odds as the vegas signal if available, else opening
+            if closing_h > 0:
+                veg_h, veg_d, veg_a = closing_h, closing_d, closing_a
+            else:
+                veg_h, veg_d, veg_a = opening_h, opening_d, opening_a
+
+            # Line movement: closing prob - opening prob (positive = sharp money on home)
+            if closing_h > 0 and opening_h > 0:
+                line_movement_home = float(closing_h - opening_h)
+            else:
+                line_movement_home = 0.0
+            line_movement_home = max(-0.20, min(0.20, line_movement_home))
 
             # Shots on target
             try:
@@ -592,6 +647,27 @@ def run(num_seasons: int = 10):
                 a_sot_val = float(row.get("AST", 0) or 0)
             except (TypeError, ValueError):
                 h_sot_val = a_sot_val = 3.5
+
+            # Corners
+            try:
+                h_corners_val = float(row.get("HC", 0) or 0)
+                a_corners_val = float(row.get("AC", 0) or 0)
+            except (TypeError, ValueError):
+                h_corners_val = a_corners_val = 5.0
+
+            # Corners rolling differential
+            corners_diff = stats.corners_pg(home) - stats.corners_pg(away)
+
+            # Referee home bias
+            ref_name = str(row.get("Referee", "")).strip()
+            if ref_name and ref_name.lower() != "nan" and ref_name != "":
+                ref = referee_stats[ref_name]
+                if ref["total"] >= 10:
+                    ref_bias = (ref["home_wins"] / ref["total"]) - 0.44
+                else:
+                    ref_bias = 0.0
+            else:
+                ref_bias = 0.0
 
             # ── Head-to-head features ──────────────────────────────────────────
             pair_key = tuple(sorted([home, away]))
@@ -643,6 +719,10 @@ def run(num_seasons: int = 10):
                 # v4.2: head-to-head
                 "h2h_home_win_rate":     h2h_home_win_rate,
                 "h2h_goal_diff":         h2h_goal_diff,
+                # v4.3: closing line + corners + referee
+                "line_movement_home":    line_movement_home,
+                "corners_diff":          corners_diff,
+                "referee_home_bias":     ref_bias,
             }
 
             outcome  = "home" if ftr == "H" else "draw" if ftr == "D" else "away"
@@ -664,7 +744,13 @@ def run(num_seasons: int = 10):
 
             # Update stats AFTER building features (no lookahead bias)
             elo.update(home, away, hg, ag)
-            stats.update(home, away, hg, ag, h_sot_val, a_sot_val, date)
+            stats.update(home, away, hg, ag, h_sot_val, a_sot_val, date,
+                         h_corners_val, a_corners_val)
+            # Referee stats update
+            if ref_name and ref_name.lower() != "nan" and ref_name != "":
+                referee_stats[ref_name]["total"] += 1
+                if ftr == "H":
+                    referee_stats[ref_name]["home_wins"] += 1
             # H2H: persist across seasons, update after match
             h2h_records[pair_key].append({
                 "home": home, "away": away, "hg": hg, "ag": ag,
@@ -706,6 +792,17 @@ def run(num_seasons: int = 10):
     with open(h2h_path, "w") as f:
         json.dump(h2h_lookup, f, separators=(",", ":"))
     print(f"[OK] H2H lookup written to {h2h_path}  ({len(h2h_lookup)} team pairs)")
+
+    # ── Generate referee bias lookup ──────────────────────────────────────────
+    ref_lookup = {}
+    for ref_name, stats_dict in referee_stats.items():
+        if stats_dict["total"] >= 10:
+            bias = (stats_dict["home_wins"] / stats_dict["total"]) - 0.44
+            ref_lookup[ref_name] = round(bias, 4)
+    ref_path = ROOT_DIR / "data" / "referee_lookup.json"
+    with open(ref_path, "w") as f:
+        json.dump(ref_lookup, f, indent=2, sort_keys=True)
+    print(f"[OK] Referee lookup written to {ref_path}  ({len(ref_lookup)} referees)")
 
     print(f"\nNext step: python python/train_model.py")
 
