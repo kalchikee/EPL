@@ -38,14 +38,14 @@ FEATURE_NAMES = [
     "h2h_home_win_rate", "h2h_goal_diff",
     "line_movement_home", "corners_diff", "referee_home_bias",
 ]
-TARGET = "outcome"  # "H", "D", "A"
-CLASSES = ["H", "D", "A"]
+TARGET = "actual_outcome"  # "home", "draw", "away"
+CLASSES = ["home", "draw", "away"]
 
 
 # -- 3-way Brier score --------------------------------------------------------
 
 def brier_3way(probs_list, outcomes):
-    outcome_map = {"H": [1,0,0], "D": [0,1,0], "A": [0,0,1]}
+    outcome_map = {"home": [1,0,0], "draw": [0,1,0], "away": [0,0,1]}
     scores = []
     for probs, outcome in zip(probs_list, outcomes):
         actual = outcome_map.get(outcome, [0,0,0])
