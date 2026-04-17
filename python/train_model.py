@@ -44,9 +44,10 @@ FEATURE_NAMES = [
     "elo_diff", "attack_diff", "defense_diff", "goal_diff_diff",
     "goals_for_diff", "goals_against_diff", "net_goals_diff",
     "form_diff", "home_form", "away_form",
-    "position_diff", "shots_on_target_diff", "possession_diff", "clean_sheet_diff",
+    "position_diff", "shots_on_target_diff", "clean_sheet_diff",
     "rest_days_diff", "home_short_rest", "away_short_rest",
-    "home_euro_fatigue", "away_euro_fatigue", "is_neutral",
+    "home_euro_fatigue", "away_euro_fatigue",
+    # Dropped: possession_diff (always 0 in training), is_neutral (always 0 in EPL)
     "lambda_home", "lambda_away",
     "vegas_home_prob", "vegas_draw_prob", "mc_home_win_prob",
     # v4.2: home/away split
