@@ -446,12 +446,14 @@ function blendWithPrior(current: number, prior: number, played: number): number 
 // ─── Team stats from standings ────────────────────────────────────────────────
 
 interface ESPNStandingsResponse {
-  standings?: {
-    entries?: Array<{
-      team?: { id?: string; abbreviation?: string; displayName?: string };
-      stats?: Array<{ name?: string; value?: number; displayValue?: string }>;
-    }>;
-  };
+  children?: Array<{
+    standings?: {
+      entries?: Array<{
+        team?: { id?: string; abbreviation?: string; displayName?: string };
+        stats?: Array<{ name?: string; value?: number; displayValue?: string }>;
+      }>;
+    };
+  }>;
 }
 
 interface ESPNTeamStatsResponse {
@@ -477,10 +479,12 @@ export async function fetchAllTeamStats(season?: number): Promise<Map<string, EP
   const teamMap = new Map<string, EPLTeamStats>();
 
   // First try to get standings (has wins/draws/losses/goals)
-  const standingsUrl = `${ESPN_BASE}/standings?season=${s}`;
+  // NOTE: The v2 standings endpoint (apis/v2, not apis/site/v2) with seasontype=1
+  // returns data under children[0].standings.entries.
+  const standingsUrl = `https://site.api.espn.com/apis/v2/sports/soccer/eng.1/standings?season=${s}&seasontype=1`;
   try {
     const data = await fetchWithRetry<ESPNStandingsResponse>(standingsUrl);
-    const entries = data.standings?.entries ?? [];
+    const entries = data.children?.[0]?.standings?.entries ?? [];
 
     for (const entry of entries) {
       if (!entry.team) continue;
