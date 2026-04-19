@@ -253,7 +253,13 @@ export function predict(
     let calDraw = applyCalibration(rawDraw, _calibrationDraw);
     let calAway = applyCalibration(rawAway, _calibrationAway);
 
-    // Re-normalize to sum to 1
+    // Clip FIRST to avoid extremes, THEN normalize to preserve sum = 1.
+    // Previously clipping happened after normalization which could produce
+    // probabilities that didn't sum to 1 (e.g. 0.95 + 0.02 + 0.02 = 0.99).
+    calHome = Math.max(0.02, Math.min(0.95, calHome));
+    calDraw = Math.max(0.02, Math.min(0.95, calDraw));
+    calAway = Math.max(0.02, Math.min(0.95, calAway));
+
     const total = calHome + calDraw + calAway;
     if (total > 0) {
       calHome /= total;
@@ -261,11 +267,7 @@ export function predict(
       calAway /= total;
     }
 
-    return {
-      home: Math.max(0.02, Math.min(0.95, calHome)),
-      draw: Math.max(0.02, Math.min(0.95, calDraw)),
-      away: Math.max(0.02, Math.min(0.95, calAway)),
-    };
+    return { home: calHome, draw: calDraw, away: calAway };
   } catch (err) {
     logger.debug({ err }, 'GBM predict error — falling back to Poisson');
     return { home: mcHomeWin, draw: mcDraw, away: mcAwayWin };
