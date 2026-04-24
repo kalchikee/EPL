@@ -83,6 +83,7 @@ ARCHITECTURE:
 
 async function runPicksAlert(gw: number, season: number): Promise<void> {
   const { sendGameweekPicks } = await import('./alerts/discord.js');
+  const { sendGameweekPicksEmail } = await import('./alerts/email.js');
   await initDb();
 
   let predictions = getPredictionsByGameweek(gw, season);
@@ -97,16 +98,24 @@ async function runPicksAlert(gw: number, season: number): Promise<void> {
     return;
   }
 
-  await sendGameweekPicks(gw, season, predictions);
+  await Promise.all([
+    sendGameweekPicks(gw, season, predictions),
+    sendGameweekPicksEmail(gw, season, predictions),
+  ]);
 }
 
 async function runRecapAlert(gw: number, season: number): Promise<void> {
+  await initDb();  // Was missing — caused "Database not initialized" crash
   const { sendGameweekRecap } = await import('./alerts/discord.js');
+  const { sendGameweekRecapEmail } = await import('./alerts/email.js');
   const { processGameweekResults } = await import('./alerts/results.js');
 
   const recapGw = gw > 1 ? gw - 1 : 1;
   const { games, metrics } = await processGameweekResults(recapGw, season);
-  await sendGameweekRecap(recapGw, season, games, metrics, metrics.seasonTotals);
+  await Promise.all([
+    sendGameweekRecap(recapGw, season, games, metrics, metrics.seasonTotals),
+    sendGameweekRecapEmail(recapGw, season, games, metrics, metrics.seasonTotals),
+  ]);
 
   if (gw > 38) {
     const { sendSeasonSummary } = await import('./alerts/discord.js');
