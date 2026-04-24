@@ -28,10 +28,16 @@ jobs:
   epl-oracle:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: write   # needed to commit predictions/<date>.json
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Get today's date (ET)
+        id: date
+        run: echo "date=$(TZ='America/New_York' date +%Y-%m-%d)" >> $GITHUB_OUTPUT
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -64,6 +70,8 @@ jobs:
         if: steps.mode.outputs.mode == 'pipeline'
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           LOG_LEVEL: info
           LOG_FORMAT: json
@@ -81,12 +89,15 @@ jobs:
         if: steps.mode.outputs.mode == 'picks'
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           LOG_LEVEL: info
           LOG_FORMAT: json
           NODE_ENV: production
           CACHE_DIR: ./cache
           DB_PATH: ./data/epl_oracle.db
+          KALSHI_MIN_PROB: '0.58'
         run: |
           GW_ARG=""
           if [ -n "${{ steps.mode.outputs.gameweek }}" ]; then
@@ -94,10 +105,25 @@ jobs:
           fi
           npm run dev -- --alert picks $GW_ARG
 
+      - name: Commit predictions JSON
+        if: steps.mode.outputs.mode == 'picks'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add predictions/${{ steps.date.outputs.date }}.json || true
+          if ! git diff --staged --quiet; then
+            git commit -m "EPL predictions ${{ steps.date.outputs.date }}"
+            git push
+          else
+            echo "No predictions file to commit"
+          fi
+
       - name: Send recap alert
         if: steps.mode.outputs.mode == 'recap'
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           LOG_LEVEL: info
           LOG_FORMAT: json

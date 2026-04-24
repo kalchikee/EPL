@@ -84,6 +84,7 @@ ARCHITECTURE:
 async function runPicksAlert(gw: number, season: number): Promise<void> {
   const { sendGameweekPicks } = await import('./alerts/discord.js');
   const { sendGameweekPicksEmail } = await import('./alerts/email.js');
+  const { writePredictionsFile } = await import('./kalshi/predictionsFile.js');
   await initDb();
 
   let predictions = getPredictionsByGameweek(gw, season);
@@ -96,6 +97,15 @@ async function runPicksAlert(gw: number, season: number): Promise<void> {
   if (predictions.length === 0) {
     logger.warn({ gw, season }, 'No matches found — nothing to send');
     return;
+  }
+
+  // Write predictions JSON for kalshi-safety to consume.
+  try {
+    const date = new Date().toISOString().slice(0, 10);
+    const path = writePredictionsFile(date, predictions);
+    logger.info({ path, picks: predictions.length }, 'Wrote predictions JSON');
+  } catch (err) {
+    logger.warn({ err }, 'Failed to write predictions JSON (non-fatal)');
   }
 
   await Promise.all([
