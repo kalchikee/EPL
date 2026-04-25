@@ -137,8 +137,36 @@ export function loadModel(): boolean {
       _metadata = JSON.parse(readFileSync(metaPath, 'utf-8')) as ModelMetadata;
     }
 
+    // ── Sanity check: GBM and scaler must agree on feature count ──
+    // Same class as the MLS bug — silent drift between writer and loader.
+    if (_gbm.feature_names.length !== _scaler.mean.length ||
+        _gbm.feature_names.length !== _scaler.scale.length) {
+      logger.error(
+        {
+          gbmFeatures: _gbm.feature_names.length,
+          scalerMean: _scaler.mean.length,
+          scalerScale: _scaler.scale.length,
+        },
+        'GBM/scaler feature-count mismatch — predictions will be silently wrong. Refusing to use model.',
+      );
+      _gbm = null; _scaler = null;
+      return false;
+    }
+
+    // Warn if the TS-side FEATURE_NAMES drifted from the GBM (informational —
+    // we now read from the GBM directly, but the const is still exported).
+    const tsList: readonly string[] = FEATURE_NAMES;
+    const tsExtras = tsList.filter((n) => !_gbm!.feature_names.includes(n));
+    const gbmExtras = _gbm.feature_names.filter((n) => !tsList.includes(n));
+    if (tsExtras.length > 0 || gbmExtras.length > 0) {
+      logger.warn(
+        { tsExtras, gbmExtras },
+        'TS FEATURE_NAMES drifted from GBM feature_names — using GBM list (authoritative)',
+      );
+    }
+
     logger.info(
-      { version: _metadata?.version, type: _metadata?.model_type, brier: _metadata?.avg_brier },
+      { version: _metadata?.version, type: _metadata?.model_type, brier: _metadata?.avg_brier, features: _gbm.feature_names.length },
       'GBM model loaded',
     );
     return true;
@@ -158,10 +186,17 @@ export function getModelInfo(): ModelMetadata | null {
 }
 
 // ─── Feature vector → standardized array ──────────────────────────────────────
+//
+// CRITICAL: build the feature array using the GBM JSON's own `feature_names`
+// list — NOT the TS `FEATURE_NAMES` const. The two had drifted (TS had 34
+// names; GBM had 32), and tree-split `featureIdx` references the GBM ordering,
+// so a mismatched TS const would silently feed the wrong column to every
+// tree split past the divergence point. Reading from the JSON guarantees
+// the array we standardize is in the order the GBM was trained on.
 
-function featureToArray(features: FeatureVector): number[] {
-  return FEATURE_NAMES.map(name => {
-    const val = features[name as keyof FeatureVector];
+function featureToArray(features: FeatureVector, gbmFeatureNames: string[]): number[] {
+  return gbmFeatureNames.map(name => {
+    const val = (features as unknown as Record<string, unknown>)[name];
     return typeof val === 'number' ? val : 0;
   });
 }
@@ -226,7 +261,7 @@ export function predict(
   }
 
   try {
-    const rawFeatures = featureToArray(features);
+    const rawFeatures = featureToArray(features, _gbm.feature_names);
     const scaled = standardize(rawFeatures, _scaler);
 
     // GBM inference: start from init_scores, accumulate tree contributions
