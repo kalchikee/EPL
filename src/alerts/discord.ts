@@ -225,14 +225,8 @@ export async function sendGameweekRecap(
   const gwLabel = `GW${gameweek} ${getSeasonLabel(season)}`;
 
   if (games.length === 0) {
-    return sendWebhook({
-      embeds: [{
-        title: `📊 EPL Oracle — ${gwLabel} Recap`,
-        description: 'No completed matches found. Results may still be processing.',
-        color: COLORS.recap_neutral,
-        timestamp: new Date().toISOString(),
-      }],
-    });
+    logger.info({ gameweek, season, gwLabel }, 'No completed matches to recap — skipping Discord notification');
+    return false;
   }
 
   const correct = games.filter(g => g.prediction.correct).length;
