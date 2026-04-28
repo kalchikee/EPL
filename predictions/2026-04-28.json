@@ -1,0 +1,178 @@
+{
+  "sport": "EPL",
+  "date": "2026-04-28",
+  "generatedAt": "2026-04-28T10:36:38.792Z",
+  "picks": [
+    {
+      "gameId": "epl-2026-04-28-AVL-FUL",
+      "home": "FUL",
+      "away": "AVL",
+      "pickedTeam": "AVL",
+      "pickedSide": "away",
+      "modelProb": 0.757837126759165,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "740935",
+        "gameweek": 38,
+        "season": 2025,
+        "venue": "Craven Cottage",
+        "drawProb": 0.039216659634143315,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.48265723126135107,
+        "btts_prob": 0.5308185579989512
+      }
+    },
+    {
+      "gameId": "epl-2026-04-28-EVE-WHU",
+      "home": "WHU",
+      "away": "EVE",
+      "pickedTeam": "EVE",
+      "pickedSide": "away",
+      "modelProb": 0.7207192044317919,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "740930",
+        "gameweek": 38,
+        "season": 2025,
+        "venue": "London Stadium",
+        "drawProb": 0.021228456566900058,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.48293953770796905,
+        "btts_prob": 0.5420353103510539
+      }
+    },
+    {
+      "gameId": "epl-2026-04-28-TOT-WOL",
+      "home": "WOL",
+      "away": "TOT",
+      "pickedTeam": "TOT",
+      "pickedSide": "away",
+      "modelProb": 0.7395051967835862,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "740934",
+        "gameweek": 38,
+        "season": 2025,
+        "venue": "Molineux Stadium",
+        "drawProb": 0.019803698490136714,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.42032742838584314,
+        "btts_prob": 0.49538425655596363
+      }
+    },
+    {
+      "gameId": "epl-2026-04-28-BRE-MUN",
+      "home": "MUN",
+      "away": "BRE",
+      "pickedTeam": "BRE",
+      "pickedSide": "away",
+      "modelProb": 0.7133322033618159,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "740932",
+        "gameweek": 38,
+        "season": 2025,
+        "venue": "Old Trafford",
+        "drawProb": 0.039325503680645725,
+        "expectedScore": "2-1",
+        "over_2_5_prob": 0.6747021242899367,
+        "btts_prob": 0.6088866738914246
+      }
+    },
+    {
+      "gameId": "epl-2026-04-28-BHA-NEW",
+      "home": "NEW",
+      "away": "BHA",
+      "pickedTeam": "BHA",
+      "pickedSide": "away",
+      "modelProb": 0.7207192044317919,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "740944",
+        "gameweek": 38,
+        "season": 2025,
+        "venue": "St. James' Park",
+        "drawProb": 0.021228456566900058,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.5028187088234727,
+        "btts_prob": 0.5528358035584972
+      }
+    },
+    {
+      "gameId": "epl-2026-04-28-SUN-WOL",
+      "home": "WOL",
+      "away": "SUN",
+      "pickedTeam": "SUN",
+      "pickedSide": "away",
+      "modelProb": 0.7395051967835862,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "740945",
+        "gameweek": 38,
+        "season": 2025,
+        "venue": "Molineux Stadium",
+        "drawProb": 0.019803698490136714,
+        "expectedScore": "0-0",
+        "over_2_5_prob": 0.31804840964622516,
+        "btts_prob": 0.4131571991701974
+      }
+    },
+    {
+      "gameId": "epl-2026-04-28-CRY-BOU",
+      "home": "BOU",
+      "away": "CRY",
+      "pickedTeam": "CRY",
+      "pickedSide": "away",
+      "modelProb": 0.7906295754026353,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "740938",
+        "gameweek": 38,
+        "season": 2025,
+        "venue": "Vitality Stadium",
+        "drawProb": 0.019033674963396776,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.5108945416852311,
+        "btts_prob": 0.5193354532451134
+      }
+    },
+    {
+      "gameId": "epl-2026-04-28-LIV-MUN",
+      "home": "MUN",
+      "away": "LIV",
+      "pickedTeam": "LIV",
+      "pickedSide": "away",
+      "modelProb": 0.7133322033618159,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "740943",
+        "gameweek": 38,
+        "season": 2025,
+        "venue": "Old Trafford",
+        "drawProb": 0.039325503680645725,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.6748172566754422,
+        "btts_prob": 0.6599411470981776
+      }
+    },
+    {
+      "gameId": "epl-2026-04-28-TOT-AVL",
+      "home": "AVL",
+      "away": "TOT",
+      "pickedTeam": "TOT",
+      "pickedSide": "away",
+      "modelProb": 0.7133322033618159,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "740937",
+        "gameweek": 38,
+        "season": 2025,
+        "venue": "Villa Park",
+        "drawProb": 0.039325503680645725,
+        "expectedScore": "2-0",
+        "over_2_5_prob": 0.5874224055745576,
+        "btts_prob": 0.5223620586474962
+      }
+    }
+  ]
+}
