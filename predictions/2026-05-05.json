@@ -1,0 +1,159 @@
+{
+  "sport": "EPL",
+  "date": "2026-05-05",
+  "generatedAt": "2026-05-05T10:30:16.741Z",
+  "picks": [
+    {
+      "gameId": "epl-2026-05-05-AVL-FUL",
+      "home": "FUL",
+      "away": "AVL",
+      "pickedTeam": "AVL",
+      "pickedSide": "away",
+      "modelProb": 0.757837126759165,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "740935",
+        "gameweek": 38,
+        "season": 2025,
+        "venue": "Craven Cottage",
+        "drawProb": 0.039216659634143315,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.48529342732113256,
+        "btts_prob": 0.5360322911154567
+      }
+    },
+    {
+      "gameId": "epl-2026-05-05-EVE-WHU",
+      "home": "WHU",
+      "away": "EVE",
+      "pickedTeam": "EVE",
+      "pickedSide": "away",
+      "modelProb": 0.7207192044317919,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "740930",
+        "gameweek": 38,
+        "season": 2025,
+        "venue": "London Stadium",
+        "drawProb": 0.021228456566900058,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.5058867513560813,
+        "btts_prob": 0.5622191904705711
+      }
+    },
+    {
+      "gameId": "epl-2026-05-05-TOT-WOL",
+      "home": "WOL",
+      "away": "TOT",
+      "pickedTeam": "TOT",
+      "pickedSide": "away",
+      "modelProb": 0.7724535218643624,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "740934",
+        "gameweek": 38,
+        "season": 2025,
+        "venue": "Molineux Stadium",
+        "drawProb": 0.020686043466876147,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.42178825051442176,
+        "btts_prob": 0.4963534580619277
+      }
+    },
+    {
+      "gameId": "epl-2026-05-05-BRE-MUN",
+      "home": "MUN",
+      "away": "BRE",
+      "pickedTeam": "BRE",
+      "pickedSide": "away",
+      "modelProb": 0.7067622253318708,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "740932",
+        "gameweek": 38,
+        "season": 2025,
+        "venue": "Old Trafford",
+        "drawProb": 0.04022678278568752,
+        "expectedScore": "2-1",
+        "over_2_5_prob": 0.679408805298836,
+        "btts_prob": 0.622337173974021
+      }
+    },
+    {
+      "gameId": "epl-2026-05-05-SUN-WOL",
+      "home": "WOL",
+      "away": "SUN",
+      "pickedTeam": "SUN",
+      "pickedSide": "away",
+      "modelProb": 0.7395051967835862,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "740945",
+        "gameweek": 38,
+        "season": 2025,
+        "venue": "Molineux Stadium",
+        "drawProb": 0.019803698490136714,
+        "expectedScore": "0-0",
+        "over_2_5_prob": 0.3151723325046503,
+        "btts_prob": 0.41123268387810713
+      }
+    },
+    {
+      "gameId": "epl-2026-05-05-CRY-BOU",
+      "home": "BOU",
+      "away": "CRY",
+      "pickedTeam": "CRY",
+      "pickedSide": "away",
+      "modelProb": 0.7906295754026353,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "740938",
+        "gameweek": 38,
+        "season": 2025,
+        "venue": "Vitality Stadium",
+        "drawProb": 0.019033674963396776,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.5311316414574694,
+        "btts_prob": 0.5123166745125293
+      }
+    },
+    {
+      "gameId": "epl-2026-05-05-LIV-MUN",
+      "home": "MUN",
+      "away": "LIV",
+      "pickedTeam": "LIV",
+      "pickedSide": "away",
+      "modelProb": 0.7133322033618159,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "740943",
+        "gameweek": 38,
+        "season": 2025,
+        "venue": "Old Trafford",
+        "drawProb": 0.039325503680645725,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.7030300038324439,
+        "btts_prob": 0.674969812220316
+      }
+    },
+    {
+      "gameId": "epl-2026-05-05-TOT-AVL",
+      "home": "AVL",
+      "away": "TOT",
+      "pickedTeam": "TOT",
+      "pickedSide": "away",
+      "modelProb": 0.7133322033618159,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "740937",
+        "gameweek": 38,
+        "season": 2025,
+        "venue": "Villa Park",
+        "drawProb": 0.039325503680645725,
+        "expectedScore": "2-0",
+        "over_2_5_prob": 0.5838518306449294,
+        "btts_prob": 0.5312190800635821
+      }
+    }
+  ]
+}
