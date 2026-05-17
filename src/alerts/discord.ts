@@ -7,6 +7,7 @@ import fetch from 'node-fetch';
 import { logger } from '../logger.js';
 import { getConfidenceTier, getDominantOutcome } from '../features/marketEdge.js';
 import { getTeamInjuries } from '../api/injuryClient.js';
+import { getSeasonTotals } from '../db/database.js';
 import type { Prediction } from '../types.js';
 import type { SeasonTotals } from '../db/database.js';
 
@@ -121,6 +122,18 @@ export async function sendGameweekPicks(
   );
 
   // ── Embed 1: All Picks ────────────────────────────────────────────────────
+  // Season hit-rate — same source the gameweek recap uses, so morning + recap
+  // agree on the number. Only shown when the season has graded predictions.
+  const seasonTotals = getSeasonTotals(season);
+  const seasonField: DiscordField[] = [];
+  if (seasonTotals.totalMatches > 0) {
+    seasonField.push({
+      name: '📊 Season Accuracy',
+      value: `**${pct(seasonTotals.accuracy)}** · ${seasonTotals.totalCorrect}/${seasonTotals.totalMatches} predictions correct this season`,
+      inline: false,
+    });
+  }
+
   const picksFields: DiscordField[] = sorted.slice(0, 20).map(pred => {
     const conf = confidenceBar(pred);
     const edgeStr = pred.edge_home !== undefined && Math.abs(pred.edge_home) >= 0.04
@@ -151,7 +164,7 @@ export async function sendGameweekPicks(
     title: `⚽ EPL Oracle — ${gwLabel} Picks`,
     description: `${predictions.length} matches this gameweek  ·  ${highConv.length} high-conviction pick${highConv.length !== 1 ? 's' : ''}${hasEdge ? '  ·  ⚡ edge games flagged' : ''}${injNote}`,
     color: COLORS.picks,
-    fields: picksFields,
+    fields: [...seasonField, ...picksFields],
     footer: { text: '🔥🔥🔥 Extreme  🔥🔥 High  🔥 Strong  ✅ Lean  🪙 Coin Flip  ·  EPL Oracle v4.2' },
     timestamp: new Date().toISOString(),
   };
