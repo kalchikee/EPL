@@ -1,0 +1,108 @@
+{
+  "graded": [
+    {
+      "date": "2026-04-25",
+      "gameId": "epl-2026-04-25-AVL-FUL",
+      "home": "FUL",
+      "away": "AVL",
+      "pickedTeam": "AVL",
+      "modelProb": 0.757837126759165,
+      "actualWinner": "FUL",
+      "correct": false,
+      "homeScore": 1,
+      "awayScore": 0,
+      "gradedAt": "2026-06-02T01:49:25.134768+00:00"
+    },
+    {
+      "date": "2026-04-25",
+      "gameId": "epl-2026-04-25-TOT-WOL",
+      "home": "WOL",
+      "away": "TOT",
+      "pickedTeam": "TOT",
+      "modelProb": 0.7395051967835862,
+      "actualWinner": "TOT",
+      "correct": true,
+      "homeScore": 0,
+      "awayScore": 1,
+      "gradedAt": "2026-06-02T01:49:25.134801+00:00"
+    },
+    {
+      "date": "2026-04-25",
+      "gameId": "epl-2026-04-25-BRE-MUN",
+      "home": "MUN",
+      "away": "BRE",
+      "pickedTeam": "BRE",
+      "modelProb": 0.7067622253318708,
+      "actualWinner": "MAN",
+      "correct": false,
+      "homeScore": 2,
+      "awayScore": 1,
+      "gradedAt": "2026-06-02T01:49:25.134812+00:00"
+    },
+    {
+      "date": "2026-05-02",
+      "gameId": "epl-2026-05-02-BHA-NEW",
+      "home": "NEW",
+      "away": "BHA",
+      "pickedTeam": "BHA",
+      "modelProb": 0.6987595574137812,
+      "actualWinner": "NEW",
+      "correct": false,
+      "homeScore": 3,
+      "awayScore": 1,
+      "gradedAt": "2026-06-02T01:49:27.791582+00:00"
+    },
+    {
+      "date": "2026-05-02",
+      "gameId": "epl-2026-05-02-SUN-WOL",
+      "home": "WOL",
+      "away": "SUN",
+      "pickedTeam": "SUN",
+      "modelProb": 0.7395051967835862,
+      "actualWinner": "DRAW",
+      "correct": false,
+      "homeScore": 1,
+      "awayScore": 1,
+      "gradedAt": "2026-06-02T01:49:27.791598+00:00"
+    },
+    {
+      "date": "2026-05-02",
+      "gameId": "epl-2026-05-02-CRY-BOU",
+      "home": "BOU",
+      "away": "CRY",
+      "pickedTeam": "CRY",
+      "modelProb": 0.7906295754026353,
+      "actualWinner": "BOU",
+      "correct": false,
+      "homeScore": 3,
+      "awayScore": 0,
+      "gradedAt": "2026-06-02T01:49:27.791602+00:00"
+    },
+    {
+      "date": "2026-05-02",
+      "gameId": "epl-2026-05-02-LIV-MUN",
+      "home": "MUN",
+      "away": "LIV",
+      "pickedTeam": "LIV",
+      "modelProb": 0.7133322033618159,
+      "actualWinner": "MAN",
+      "correct": false,
+      "homeScore": 3,
+      "awayScore": 2,
+      "gradedAt": "2026-06-02T01:49:27.791605+00:00"
+    },
+    {
+      "date": "2026-05-02",
+      "gameId": "epl-2026-05-02-TOT-AVL",
+      "home": "AVL",
+      "away": "TOT",
+      "pickedTeam": "TOT",
+      "modelProb": 0.7133322033618159,
+      "actualWinner": "TOT",
+      "correct": true,
+      "homeScore": 1,
+      "awayScore": 2,
+      "gradedAt": "2026-06-02T01:49:27.791607+00:00"
+    }
+  ]
+}

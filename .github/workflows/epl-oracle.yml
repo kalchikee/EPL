@@ -48,6 +48,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # python/recap.py is the source of truth for grading_history.json,
+      # which the morning Discord embed reads instead of the (never-updated)
+      # SQLite DB. Need Python + requests on the runner.
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: pip install requests
+
       - name: Determine run mode
         id: mode
         run: |
@@ -116,6 +127,24 @@ jobs:
             git push
           else
             echo "No predictions file to commit"
+          fi
+
+      # Grade any ungraded predictions/*.json files against ESPN scores and
+      # commit data/grading_history.json. Runs on every workflow_dispatch
+      # too so the file can be force-refreshed.
+      - name: Run recap grader (writes grading_history.json)
+        run: python python/recap.py
+
+      - name: Commit grading_history.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/grading_history.json || true
+          if ! git diff --staged --quiet; then
+            git commit -m "EPL recap: grade ungraded predictions"
+            git push
+          else
+            echo "No new gradings to commit"
           fi
 
       - name: Send recap alert

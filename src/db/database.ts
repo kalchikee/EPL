@@ -299,6 +299,16 @@ export interface SeasonTotals {
 }
 
 export function getSeasonTotals(season: number): SeasonTotals {
+  // Primary source: data/grading_history.json. EPL Oracle's DB lives in
+  // git and isn't committed back from CI, so predictions.correct stays
+  // NULL on every row and the DB query below always returned 0. The
+  // python/recap.py script writes grading_history.json after each
+  // gameweek; the morning Discord embed reads from it instead.
+  const histTotals = readSeasonTotalsFromHistory(season);
+  if (histTotals.totalMatches > 0) return histTotals;
+
+  // Legacy DB path — kept for backward compatibility and in case some
+  // environment populates predictions.correct directly.
   const rows = queryAll<{
     correct: number | null;
     calibrated_home_prob: number;
@@ -332,6 +342,59 @@ export function getSeasonTotals(season: number): SeasonTotals {
     hcAccuracy: hcRows.length > 0 ? hcCorrect / hcRows.length : 0,
     avgBrier,
   };
+}
+
+interface GradedPick {
+  date: string;
+  gameId: string;
+  modelProb?: number;
+  correct?: boolean;
+  pickedTeam?: string;
+}
+
+function readSeasonTotalsFromHistory(season: number): SeasonTotals {
+  const empty: SeasonTotals = {
+    season, totalMatches: 0, totalCorrect: 0, accuracy: 0,
+    hcMatches: 0, hcCorrect: 0, hcAccuracy: 0, avgBrier: 0,
+  };
+  try {
+    // Lazy-load to avoid a hard fs dependency at module init.
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { readFileSync, existsSync } = require('fs');
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const path = require('path');
+    const file = path.resolve(process.cwd(), 'data/grading_history.json');
+    if (!existsSync(file)) return empty;
+    const parsed = JSON.parse(readFileSync(file, 'utf-8')) as { graded?: GradedPick[] };
+    const graded = parsed.graded ?? [];
+    // Filter to picks whose gameId's date matches the season window. EPL
+    // seasons run August–May, so the simplest filter is: a graded entry
+    // belongs to "season=N" if its date >= Aug 1 of year N or < Jul 1 of
+    // year N+1. For the current 2025-26 season (season=2025) that's
+    // 2025-08-01 .. 2026-07-31.
+    const start = new Date(Date.UTC(season, 7, 1));  // Aug 1, year=season
+    const end = new Date(Date.UTC(season + 1, 6, 31));  // Jul 31, year=season+1
+    const inSeason = graded.filter(g => {
+      const d = new Date(g.date + 'T00:00:00Z');
+      return d >= start && d <= end;
+    });
+    if (inSeason.length === 0) return empty;
+    const correct = inSeason.filter(g => g.correct).length;
+    const hcPicks = inSeason.filter(g => (g.modelProb ?? 0) >= 0.60);
+    const hcCorrect = hcPicks.filter(g => g.correct).length;
+    return {
+      season,
+      totalMatches: inSeason.length,
+      totalCorrect: correct,
+      accuracy: correct / inSeason.length,
+      hcMatches: hcPicks.length,
+      hcCorrect,
+      hcAccuracy: hcPicks.length > 0 ? hcCorrect / hcPicks.length : 0,
+      avgBrier: 0,  // not tracked in the JSON; legacy DB path provided it
+    };
+  } catch {
+    return empty;
+  }
 }
 
 export function closeDb(): void {
