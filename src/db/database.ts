@@ -397,6 +397,69 @@ function readSeasonTotalsFromHistory(season: number): SeasonTotals {
   }
 }
 
+export interface ConfidenceBucket {
+  label: string;     // e.g. "70-80%"
+  total: number;
+  correct: number;
+  accuracy: number;  // 0..1
+}
+
+// Per-confidence-bucket calibration for the morning Discord embed. Bins
+// graded picks from data/grading_history.json by their PICK-SIDE
+// probability (modelProb is already pick-side: max(home, draw, away) —
+// do NOT take max again, that would double-bucket). Buckets are
+// half-open [lo, hi). Only buckets with at least one graded pick are
+// returned so the embed stays compact early-season.
+export function getConfidenceBuckets(season: number): ConfidenceBucket[] {
+  const buckets: Array<{ lo: number; hi: number; label: string; total: number; correct: number }> = [
+    { lo: 0.50, hi: 0.60, label: '50-60%', total: 0, correct: 0 },
+    { lo: 0.60, hi: 0.70, label: '60-70%', total: 0, correct: 0 },
+    { lo: 0.70, hi: 0.80, label: '70-80%', total: 0, correct: 0 },
+    { lo: 0.80, hi: 0.90, label: '80-90%', total: 0, correct: 0 },
+    { lo: 0.90, hi: 1.01, label: '90%+',   total: 0, correct: 0 },
+  ];
+  try {
+    // Lazy-load to match readSeasonTotalsFromHistory's pattern.
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { readFileSync, existsSync } = require('fs');
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const path = require('path');
+    const file = path.resolve(process.cwd(), 'data/grading_history.json');
+    if (!existsSync(file)) return [];
+    const parsed = JSON.parse(readFileSync(file, 'utf-8')) as { graded?: GradedPick[] };
+    const graded = parsed.graded ?? [];
+    // Same season-window filter as readSeasonTotalsFromHistory: EPL
+    // seasons run August–May, so season=N maps to 2025-08-01..2026-07-31.
+    const start = new Date(Date.UTC(season, 7, 1));
+    const end = new Date(Date.UTC(season + 1, 6, 31));
+    const inSeason = graded.filter(g => {
+      const d = new Date(g.date + 'T00:00:00Z');
+      return d >= start && d <= end;
+    });
+    for (const g of inSeason) {
+      const p = g.modelProb;
+      if (p === undefined || p === null) continue;
+      for (const b of buckets) {
+        if (p >= b.lo && p < b.hi) {
+          b.total += 1;
+          if (g.correct) b.correct += 1;
+          break;
+        }
+      }
+    }
+  } catch {
+    return [];
+  }
+  return buckets
+    .filter(b => b.total > 0)
+    .map(b => ({
+      label: b.label,
+      total: b.total,
+      correct: b.correct,
+      accuracy: b.correct / b.total,
+    }));
+}
+
 export function closeDb(): void {
   if (_db) {
     persistDb();
