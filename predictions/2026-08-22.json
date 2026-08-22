@@ -1,0 +1,159 @@
+{
+  "sport": "EPL",
+  "date": "2026-08-22",
+  "generatedAt": "2026-08-22T08:08:19.414Z",
+  "picks": [
+    {
+      "gameId": "epl-2026-08-22-MUN-HUL",
+      "home": "HUL",
+      "away": "MUN",
+      "pickedTeam": "MUN",
+      "pickedSide": "away",
+      "modelProb": 0.7260982871710516,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879322",
+        "gameweek": 2,
+        "season": 2026,
+        "venue": "The MKM Stadium",
+        "drawProb": 0.03757423380759065,
+        "expectedScore": "1-0",
+        "over_2_5_prob": 0.4519907715636317,
+        "btts_prob": 0.43656712392551633
+      }
+    },
+    {
+      "gameId": "epl-2026-08-22-CRY-EVE",
+      "home": "EVE",
+      "away": "CRY",
+      "pickedTeam": "CRY",
+      "pickedSide": "away",
+      "modelProb": 0.7395051967835862,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879300",
+        "gameweek": 2,
+        "season": 2026,
+        "venue": "Hill Dickinson Stadium",
+        "drawProb": 0.019803698490136714,
+        "expectedScore": "1-0",
+        "over_2_5_prob": 0.36151311306155054,
+        "btts_prob": 0.4100353005257149
+      }
+    },
+    {
+      "gameId": "epl-2026-08-22-SUN-IPS",
+      "home": "IPS",
+      "away": "SUN",
+      "pickedTeam": "SUN",
+      "pickedSide": "away",
+      "modelProb": 0.6116018461690417,
+      "confidenceTier": "high_conviction",
+      "extra": {
+        "matchId": "401879299",
+        "gameweek": 2,
+        "season": 2026,
+        "venue": "Portman Road",
+        "drawProb": 0.04035305494347619,
+        "expectedScore": "1-0",
+        "over_2_5_prob": 0.44691664825221267,
+        "btts_prob": 0.42016680092100556
+      }
+    },
+    {
+      "gameId": "epl-2026-08-22-TOT-BRE",
+      "home": "BRE",
+      "away": "TOT",
+      "pickedTeam": "TOT",
+      "pickedSide": "away",
+      "modelProb": 0.8997966064796459,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879321",
+        "gameweek": 2,
+        "season": 2026,
+        "venue": "Gtech Community Stadium",
+        "drawProb": 0.02077387426641489,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.5962300720978728,
+        "btts_prob": 0.6303765026599979
+      }
+    },
+    {
+      "gameId": "epl-2026-08-22-AVL-BHA",
+      "home": "BHA",
+      "away": "AVL",
+      "pickedTeam": "AVL",
+      "pickedSide": "away",
+      "modelProb": 0.7133322033618159,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879297",
+        "gameweek": 2,
+        "season": 2026,
+        "venue": "American Express Stadium",
+        "drawProb": 0.039325503680645725,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.5630469578799407,
+        "btts_prob": 0.5756762855105716
+      }
+    },
+    {
+      "gameId": "epl-2026-08-22-BOU-CRY",
+      "home": "CRY",
+      "away": "BOU",
+      "pickedTeam": "BOU",
+      "pickedSide": "away",
+      "modelProb": 0.7067310772542638,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879320",
+        "gameweek": 2,
+        "season": 2026,
+        "venue": "Etihad Stadium",
+        "drawProb": 0.04022500993067747,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.45830847010318554,
+        "btts_prob": 0.5189044911335357
+      }
+    },
+    {
+      "gameId": "epl-2026-08-22-LIV-NEW",
+      "home": "NEW",
+      "away": "LIV",
+      "pickedTeam": "LIV",
+      "pickedSide": "away",
+      "modelProb": 0.8998371335504887,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879319",
+        "gameweek": 2,
+        "season": 2026,
+        "venue": "St. James' Park",
+        "drawProb": 0.020765472312703582,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.4711148915107714,
+        "btts_prob": 0.5393098236410463
+      }
+    },
+    {
+      "gameId": "epl-2026-08-22-CHE-FUL",
+      "home": "FUL",
+      "away": "CHE",
+      "pickedTeam": "CHE",
+      "pickedSide": "away",
+      "modelProb": 0.7724535218643624,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879318",
+        "gameweek": 2,
+        "season": 2026,
+        "venue": "Craven Cottage",
+        "drawProb": 0.020686043466876147,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.5406351732344957,
+        "btts_prob": 0.5781966553656431
+      }
+    }
+  ]
+}
