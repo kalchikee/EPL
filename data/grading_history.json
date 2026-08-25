@@ -181,6 +181,19 @@
       "homeScore": 2,
       "awayScore": 2,
       "gradedAt": "2026-08-24T09:15:35.386345+00:00"
+    },
+    {
+      "date": "2026-08-22",
+      "gameId": "epl-2026-08-22-CHE-FUL",
+      "home": "FUL",
+      "away": "CHE",
+      "pickedTeam": "CHE",
+      "modelProb": 0.7724535218643624,
+      "actualWinner": "CHE",
+      "correct": true,
+      "homeScore": 2,
+      "awayScore": 3,
+      "gradedAt": "2026-08-25T10:06:29.714848+00:00"
     }
   ]
 }
