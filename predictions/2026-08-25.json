@@ -1,0 +1,235 @@
+{
+  "sport": "EPL",
+  "date": "2026-08-25",
+  "generatedAt": "2026-08-25T10:06:12.079Z",
+  "picks": [
+    {
+      "gameId": "epl-2026-08-25-AVL-BHA",
+      "home": "BHA",
+      "away": "AVL",
+      "pickedTeam": "AVL",
+      "pickedSide": "away",
+      "modelProb": 0.6198059785629686,
+      "confidenceTier": "high_conviction",
+      "extra": {
+        "matchId": "401879297",
+        "gameweek": 3,
+        "season": 2026,
+        "venue": "American Express Stadium",
+        "drawProb": 0.0989120421748157,
+        "expectedScore": "2-0",
+        "over_2_5_prob": 0.7163135736567092,
+        "btts_prob": 0.5873280333675786
+      }
+    },
+    {
+      "gameId": "epl-2026-08-25-LIV-NEW",
+      "home": "NEW",
+      "away": "LIV",
+      "pickedTeam": "LIV",
+      "pickedSide": "away",
+      "modelProb": 0.7780335045723408,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879319",
+        "gameweek": 3,
+        "season": 2026,
+        "venue": "St. James' Park",
+        "drawProb": 0.04026178456478501,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.584347048151246,
+        "btts_prob": 0.6259684784096679
+      }
+    },
+    {
+      "gameId": "epl-2026-08-25-CHE-FUL",
+      "home": "FUL",
+      "away": "CHE",
+      "pickedTeam": "CHE",
+      "pickedSide": "away",
+      "modelProb": 0.865091147024266,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879318",
+        "gameweek": 3,
+        "season": 2026,
+        "venue": "Craven Cottage",
+        "drawProb": 0.04024399681987997,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.6716067371513476,
+        "btts_prob": 0.6833217964356012
+      }
+    },
+    {
+      "gameId": "epl-2026-08-25-CRY-CRY",
+      "home": "CRY",
+      "away": "CRY",
+      "pickedTeam": "CRY",
+      "pickedSide": "away",
+      "modelProb": 0.7207192044317919,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879294",
+        "gameweek": 3,
+        "season": 2026,
+        "venue": "Selhurst Park",
+        "drawProb": 0.021228456566900058,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.4466346266972112,
+        "btts_prob": 0.4828739291410673
+      }
+    },
+    {
+      "gameId": "epl-2026-08-25-EVE-BOU",
+      "home": "BOU",
+      "away": "EVE",
+      "pickedTeam": "EVE",
+      "pickedSide": "away",
+      "modelProb": 0.7067310772542638,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879296",
+        "gameweek": 3,
+        "season": 2026,
+        "venue": "Vitality Stadium",
+        "drawProb": 0.04022500993067747,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.5893003494507815,
+        "btts_prob": 0.5928533712935226
+      }
+    },
+    {
+      "gameId": "epl-2026-08-25-HUL-COV",
+      "home": "COV",
+      "away": "HUL",
+      "pickedTeam": "HUL",
+      "pickedSide": "away",
+      "modelProb": 0.7017897646662014,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879316",
+        "gameweek": 3,
+        "season": 2026,
+        "venue": "Coventry Building Society Arena",
+        "drawProb": 0.04697931482476225,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.4920055974222872,
+        "btts_prob": 0.5513295228495061
+      }
+    },
+    {
+      "gameId": "epl-2026-08-25-NEW-TOT",
+      "home": "TOT",
+      "away": "NEW",
+      "pickedTeam": "NEW",
+      "pickedSide": "away",
+      "modelProb": 0.757837126759165,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879312",
+        "gameweek": 3,
+        "season": 2026,
+        "venue": "Tottenham Hotspur Stadium",
+        "drawProb": 0.039216659634143315,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.6999221629927261,
+        "btts_prob": 0.7078168093486696
+      }
+    },
+    {
+      "gameId": "epl-2026-08-25-BHA-CHE",
+      "home": "CHE",
+      "away": "BHA",
+      "pickedTeam": "BHA",
+      "pickedSide": "away",
+      "modelProb": 0.6936312591083498,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879317",
+        "gameweek": 3,
+        "season": 2026,
+        "venue": "Stamford Bridge",
+        "drawProb": 0.04202179190837893,
+        "expectedScore": "2-1",
+        "over_2_5_prob": 0.7535014335109079,
+        "btts_prob": 0.7139679430855834
+      }
+    },
+    {
+      "gameId": "epl-2026-08-25-BRE-LEE",
+      "home": "LEE",
+      "away": "BRE",
+      "pickedTeam": "BRE",
+      "pickedSide": "away",
+      "modelProb": 0.7724535218643624,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879315",
+        "gameweek": 3,
+        "season": 2026,
+        "venue": "Elland Road",
+        "drawProb": 0.020686043466876147,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.609366716749235,
+        "btts_prob": 0.6153300513918472
+      }
+    },
+    {
+      "gameId": "epl-2026-08-25-FUL-SUN",
+      "home": "SUN",
+      "away": "FUL",
+      "pickedTeam": "FUL",
+      "pickedSide": "away",
+      "modelProb": 0.8103580651915963,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879313",
+        "gameweek": 3,
+        "season": 2026,
+        "venue": "Stadium of Light",
+        "drawProb": 0.019508620087945835,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.6282761333017366,
+        "btts_prob": 0.6523050566232135
+      }
+    },
+    {
+      "gameId": "epl-2026-08-25-IPS-MUN",
+      "home": "MUN",
+      "away": "IPS",
+      "pickedTeam": "IPS",
+      "pickedSide": "away",
+      "modelProb": 0.7133322033618159,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879293",
+        "gameweek": 3,
+        "season": 2026,
+        "venue": "Old Trafford",
+        "drawProb": 0.039325503680645725,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.4960131660456042,
+        "btts_prob": 0.5590312767979742
+      }
+    },
+    {
+      "gameId": "epl-2026-08-25-ARS-AVL",
+      "home": "AVL",
+      "away": "ARS",
+      "pickedTeam": "ARS",
+      "pickedSide": "away",
+      "modelProb": 0.9078133783024172,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879295",
+        "gameweek": 3,
+        "season": 2026,
+        "venue": "Villa Park",
+        "drawProb": 0.01911186059584036,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.6038913993631525,
+        "btts_prob": 0.6093308900274356
+      }
+    }
+  ]
+}
