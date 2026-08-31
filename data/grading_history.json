@@ -194,6 +194,97 @@
       "homeScore": 2,
       "awayScore": 3,
       "gradedAt": "2026-08-25T10:06:29.714848+00:00"
+    },
+    {
+      "date": "2026-08-29",
+      "gameId": "epl-2026-08-29-EVE-BOU",
+      "home": "BOU",
+      "away": "EVE",
+      "pickedTeam": "EVE",
+      "modelProb": 0.7067310772542638,
+      "actualWinner": "DRAW",
+      "correct": false,
+      "homeScore": 1,
+      "awayScore": 1,
+      "gradedAt": "2026-08-31T09:07:07.467248+00:00"
+    },
+    {
+      "date": "2026-08-29",
+      "gameId": "epl-2026-08-29-HUL-COV",
+      "home": "COV",
+      "away": "HUL",
+      "pickedTeam": "HUL",
+      "modelProb": 0.7017897646662014,
+      "actualWinner": "HUL",
+      "correct": true,
+      "homeScore": 0,
+      "awayScore": 1,
+      "gradedAt": "2026-08-31T09:07:07.467272+00:00"
+    },
+    {
+      "date": "2026-08-29",
+      "gameId": "epl-2026-08-29-NEW-TOT",
+      "home": "TOT",
+      "away": "NEW",
+      "pickedTeam": "NEW",
+      "modelProb": 0.757837126759165,
+      "actualWinner": "NEW",
+      "correct": true,
+      "homeScore": 0,
+      "awayScore": 2,
+      "gradedAt": "2026-08-31T09:07:07.467277+00:00"
+    },
+    {
+      "date": "2026-08-29",
+      "gameId": "epl-2026-08-29-BHA-CHE",
+      "home": "CHE",
+      "away": "BHA",
+      "pickedTeam": "BHA",
+      "modelProb": 0.6936312591083498,
+      "actualWinner": "CHE",
+      "correct": false,
+      "homeScore": 4,
+      "awayScore": 3,
+      "gradedAt": "2026-08-31T09:07:07.467281+00:00"
+    },
+    {
+      "date": "2026-08-29",
+      "gameId": "epl-2026-08-29-BRE-LEE",
+      "home": "LEE",
+      "away": "BRE",
+      "pickedTeam": "BRE",
+      "modelProb": 0.7724535218643624,
+      "actualWinner": "DRAW",
+      "correct": false,
+      "homeScore": 1,
+      "awayScore": 1,
+      "gradedAt": "2026-08-31T09:07:07.467285+00:00"
+    },
+    {
+      "date": "2026-08-29",
+      "gameId": "epl-2026-08-29-FUL-SUN",
+      "home": "SUN",
+      "away": "FUL",
+      "pickedTeam": "FUL",
+      "modelProb": 0.8103580651915963,
+      "actualWinner": "SUN",
+      "correct": false,
+      "homeScore": 1,
+      "awayScore": 0,
+      "gradedAt": "2026-08-31T09:07:07.467289+00:00"
+    },
+    {
+      "date": "2026-08-29",
+      "gameId": "epl-2026-08-29-IPS-MUN",
+      "home": "MUN",
+      "away": "IPS",
+      "pickedTeam": "IPS",
+      "modelProb": 0.757837126759165,
+      "actualWinner": "MAN",
+      "correct": false,
+      "homeScore": 5,
+      "awayScore": 2,
+      "gradedAt": "2026-08-31T09:07:07.467293+00:00"
     }
   ]
 }
