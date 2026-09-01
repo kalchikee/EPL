@@ -285,6 +285,19 @@
       "homeScore": 5,
       "awayScore": 2,
       "gradedAt": "2026-08-31T09:07:07.467293+00:00"
+    },
+    {
+      "date": "2026-08-29",
+      "gameId": "epl-2026-08-29-ARS-AVL",
+      "home": "AVL",
+      "away": "ARS",
+      "pickedTeam": "ARS",
+      "modelProb": 0.9023613462255761,
+      "actualWinner": "ARS",
+      "correct": true,
+      "homeScore": 0,
+      "awayScore": 1,
+      "gradedAt": "2026-09-01T10:01:24.713443+00:00"
     }
   ]
 }
