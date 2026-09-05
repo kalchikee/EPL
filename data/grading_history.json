@@ -298,6 +298,19 @@
       "homeScore": 0,
       "awayScore": 1,
       "gradedAt": "2026-09-01T10:01:24.713443+00:00"
+    },
+    {
+      "date": "2026-09-01",
+      "gameId": "epl-2026-09-01-LIV-IPS",
+      "home": "IPS",
+      "away": "LIV",
+      "pickedTeam": "LIV",
+      "modelProb": 0.8997626188931053,
+      "actualWinner": "LIV",
+      "correct": true,
+      "homeScore": 0,
+      "awayScore": 2,
+      "gradedAt": "2026-09-05T08:15:50.405351+00:00"
     }
   ]
 }
