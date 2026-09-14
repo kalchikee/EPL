@@ -363,6 +363,71 @@
       "homeScore": 2,
       "awayScore": 2,
       "gradedAt": "2026-09-07T09:06:50.816380+00:00"
+    },
+    {
+      "date": "2026-09-12",
+      "gameId": "epl-2026-09-12-BRE-BOU",
+      "home": "BOU",
+      "away": "BRE",
+      "pickedTeam": "BRE",
+      "modelProb": 0.7395051967835862,
+      "actualWinner": "DRAW",
+      "correct": false,
+      "homeScore": 2,
+      "awayScore": 2,
+      "gradedAt": "2026-09-14T09:07:11.693482+00:00"
+    },
+    {
+      "date": "2026-09-12",
+      "gameId": "epl-2026-09-12-IPS-CRY",
+      "home": "CRY",
+      "away": "IPS",
+      "pickedTeam": "IPS",
+      "modelProb": 0.7271291559050455,
+      "actualWinner": "IPS",
+      "correct": true,
+      "homeScore": 2,
+      "awayScore": 3,
+      "gradedAt": "2026-09-14T09:07:11.693509+00:00"
+    },
+    {
+      "date": "2026-09-12",
+      "gameId": "epl-2026-09-12-FUL-LIV",
+      "home": "LIV",
+      "away": "FUL",
+      "pickedTeam": "LIV",
+      "modelProb": 0.6606682228847758,
+      "actualWinner": "DRAW",
+      "correct": false,
+      "homeScore": 0,
+      "awayScore": 0,
+      "gradedAt": "2026-09-14T09:07:11.693516+00:00"
+    },
+    {
+      "date": "2026-09-12",
+      "gameId": "epl-2026-09-12-ARS-SUN",
+      "home": "SUN",
+      "away": "ARS",
+      "pickedTeam": "ARS",
+      "modelProb": 0.9023613462255761,
+      "actualWinner": "ARS",
+      "correct": true,
+      "homeScore": 0,
+      "awayScore": 2,
+      "gradedAt": "2026-09-14T09:07:11.693521+00:00"
+    },
+    {
+      "date": "2026-09-12",
+      "gameId": "epl-2026-09-12-BHA-COV",
+      "home": "COV",
+      "away": "BHA",
+      "pickedTeam": "BHA",
+      "modelProb": 0.7133322033618159,
+      "actualWinner": "BHA",
+      "correct": true,
+      "homeScore": 0,
+      "awayScore": 5,
+      "gradedAt": "2026-09-14T09:07:11.693526+00:00"
     }
   ]
 }
