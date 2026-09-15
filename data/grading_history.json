@@ -428,6 +428,19 @@
       "homeScore": 0,
       "awayScore": 5,
       "gradedAt": "2026-09-14T09:07:11.693526+00:00"
+    },
+    {
+      "date": "2026-09-12",
+      "gameId": "epl-2026-09-12-NEW-LEE",
+      "home": "LEE",
+      "away": "NEW",
+      "pickedTeam": "NEW",
+      "modelProb": 0.8103580651915963,
+      "actualWinner": "LEE",
+      "correct": false,
+      "homeScore": 4,
+      "awayScore": 1,
+      "gradedAt": "2026-09-15T10:01:23.657763+00:00"
     }
   ]
 }
