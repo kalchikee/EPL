@@ -441,6 +441,19 @@
       "homeScore": 4,
       "awayScore": 1,
       "gradedAt": "2026-09-15T10:01:23.657763+00:00"
+    },
+    {
+      "date": "2026-09-15",
+      "gameId": "epl-2026-09-15-CHE-BRE",
+      "home": "BRE",
+      "away": "CHE",
+      "pickedTeam": "CHE",
+      "modelProb": 0.8859405093087952,
+      "actualWinner": "BRE",
+      "correct": false,
+      "homeScore": 3,
+      "awayScore": 0,
+      "gradedAt": "2026-09-19T08:16:11.992176+00:00"
     }
   ]
 }
