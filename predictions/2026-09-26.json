@@ -1,0 +1,64 @@
+{
+  "sport": "EPL",
+  "date": "2026-09-26",
+  "generatedAt": "2026-09-26T08:17:09.839Z",
+  "picks": [
+    {
+      "gameId": "epl-2026-09-26-LIV-BOU",
+      "home": "BOU",
+      "away": "LIV",
+      "pickedTeam": "LIV",
+      "pickedSide": "away",
+      "modelProb": 0.8782963382364836,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879276",
+        "gameweek": 7,
+        "season": 2026,
+        "venue": "Vitality Stadium",
+        "drawProb": 0.04085830165351328,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.4684936868813162,
+        "btts_prob": 0.5072334324740125
+      }
+    },
+    {
+      "gameId": "epl-2026-09-26-CRY-LEE",
+      "home": "LEE",
+      "away": "CRY",
+      "pickedTeam": "CRY",
+      "pickedSide": "away",
+      "modelProb": 0.7395051967835862,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879273",
+        "gameweek": 7,
+        "season": 2026,
+        "venue": "Elland Road",
+        "drawProb": 0.019803698490136714,
+        "expectedScore": "2-0",
+        "over_2_5_prob": 0.6213587549248158,
+        "btts_prob": 0.4689950814777102
+      }
+    },
+    {
+      "gameId": "epl-2026-09-26-MUN-FUL",
+      "home": "FUL",
+      "away": "MUN",
+      "pickedTeam": "MUN",
+      "pickedSide": "away",
+      "modelProb": 0.6273764258555133,
+      "confidenceTier": "high_conviction",
+      "extra": {
+        "matchId": "401878777",
+        "gameweek": 7,
+        "season": 2026,
+        "venue": "Craven Cottage",
+        "drawProb": 0.053231939163498096,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.5678874699499323,
+        "btts_prob": 0.5951430307574654
+      }
+    }
+  ]
+}
