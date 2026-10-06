@@ -1,0 +1,159 @@
+{
+  "sport": "EPL",
+  "date": "2026-10-06",
+  "generatedAt": "2026-10-06T10:00:58.875Z",
+  "picks": [
+    {
+      "gameId": "epl-2026-10-06-BRE-AVL",
+      "home": "AVL",
+      "away": "BRE",
+      "pickedTeam": "BRE",
+      "pickedSide": "away",
+      "modelProb": 0.6522142906444175,
+      "confidenceTier": "high_conviction",
+      "extra": {
+        "matchId": "401878776",
+        "gameweek": 9,
+        "season": 2026,
+        "venue": "Villa Park",
+        "drawProb": 0.047051852207519965,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.5875939147664444,
+        "btts_prob": 0.6282785782387176
+      }
+    },
+    {
+      "gameId": "epl-2026-10-06-BOU-CHE",
+      "home": "CHE",
+      "away": "BOU",
+      "pickedTeam": "BOU",
+      "pickedSide": "away",
+      "modelProb": 0.6936312591083498,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401878775",
+        "gameweek": 9,
+        "season": 2026,
+        "venue": "Stamford Bridge",
+        "drawProb": 0.04202179190837893,
+        "expectedScore": "3-1",
+        "over_2_5_prob": 0.8248151910993596,
+        "btts_prob": 0.7223431655268047
+      }
+    },
+    {
+      "gameId": "epl-2026-10-06-FUL-IPS",
+      "home": "IPS",
+      "away": "FUL",
+      "pickedTeam": "FUL",
+      "pickedSide": "away",
+      "modelProb": 0.7133322033618159,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879265",
+        "gameweek": 9,
+        "season": 2026,
+        "venue": "Portman Road",
+        "drawProb": 0.039325503680645725,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.6572029477322174,
+        "btts_prob": 0.6367349768489984
+      }
+    },
+    {
+      "gameId": "epl-2026-10-06-BHA-SUN",
+      "home": "SUN",
+      "away": "BHA",
+      "pickedTeam": "BHA",
+      "pickedSide": "away",
+      "modelProb": 0.9595959595959596,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401878772",
+        "gameweek": 9,
+        "season": 2026,
+        "venue": "Stadium of Light",
+        "drawProb": 0.020202020202020204,
+        "expectedScore": "1-2",
+        "over_2_5_prob": 0.7370775963640542,
+        "btts_prob": 0.6938811796411926
+      }
+    },
+    {
+      "gameId": "epl-2026-10-06-TOT-MUN",
+      "home": "MUN",
+      "away": "TOT",
+      "pickedTeam": "TOT",
+      "pickedSide": "away",
+      "modelProb": 0.8103580651915963,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401878773",
+        "gameweek": 9,
+        "season": 2026,
+        "venue": "Old Trafford",
+        "drawProb": 0.019508620087945835,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.6051294209918545,
+        "btts_prob": 0.560010531306412
+      }
+    },
+    {
+      "gameId": "epl-2026-10-06-NFO-CRY",
+      "home": "CRY",
+      "away": "NFO",
+      "pickedTeam": "NFO",
+      "pickedSide": "away",
+      "modelProb": 0.7270972222767207,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879266",
+        "gameweek": 9,
+        "season": 2026,
+        "venue": "Selhurst Park",
+        "drawProb": 0.020743656047306446,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.3965284379898597,
+        "btts_prob": 0.4772377809195014
+      }
+    },
+    {
+      "gameId": "epl-2026-10-06-CRY-LIV",
+      "home": "LIV",
+      "away": "CRY",
+      "pickedTeam": "LIV",
+      "pickedSide": "home",
+      "modelProb": 0.6606682228847758,
+      "confidenceTier": "high_conviction",
+      "extra": {
+        "matchId": "401879264",
+        "gameweek": 9,
+        "season": 2026,
+        "venue": "Anfield",
+        "drawProb": 0.020347340573352718,
+        "expectedScore": "3-0",
+        "over_2_5_prob": 0.8112250037851493,
+        "btts_prob": 0.40130470872203156
+      }
+    },
+    {
+      "gameId": "epl-2026-10-06-NEW-COV",
+      "home": "COV",
+      "away": "NEW",
+      "pickedTeam": "NEW",
+      "pickedSide": "away",
+      "modelProb": 0.8686664594342555,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879267",
+        "gameweek": 9,
+        "season": 2026,
+        "venue": "Coventry Building Society Arena",
+        "drawProb": 0.04041032017407522,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.5226279852162685,
+        "btts_prob": 0.5602760628240213
+      }
+    }
+  ]
+}
