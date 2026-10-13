@@ -610,6 +610,19 @@
       "homeScore": 3,
       "awayScore": 1,
       "gradedAt": "2026-10-12T09:16:54.375908+00:00"
+    },
+    {
+      "date": "2026-10-10",
+      "gameId": "epl-2026-10-10-NEW-COV",
+      "home": "COV",
+      "away": "NEW",
+      "pickedTeam": "NEW",
+      "modelProb": 0.8686664594342555,
+      "actualWinner": "COV",
+      "correct": false,
+      "homeScore": 4,
+      "awayScore": 1,
+      "gradedAt": "2026-10-13T10:02:39.418397+00:00"
     }
   ]
 }
