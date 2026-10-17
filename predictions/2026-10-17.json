@@ -1,0 +1,197 @@
+{
+  "sport": "EPL",
+  "date": "2026-10-17",
+  "generatedAt": "2026-10-17T08:15:03.939Z",
+  "picks": [
+    {
+      "gameId": "epl-2026-10-17-NFO-CRY",
+      "home": "CRY",
+      "away": "NFO",
+      "pickedTeam": "NFO",
+      "pickedSide": "away",
+      "modelProb": 0.7103978379945907,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879266",
+        "gameweek": 10,
+        "season": 2026,
+        "venue": "Selhurst Park",
+        "drawProb": 0.03972804417316858,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.4208635180975878,
+        "btts_prob": 0.46809648466299814
+      }
+    },
+    {
+      "gameId": "epl-2026-10-17-CRY-LIV",
+      "home": "LIV",
+      "away": "CRY",
+      "pickedTeam": "LIV",
+      "pickedSide": "home",
+      "modelProb": 0.7612935567589019,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879264",
+        "gameweek": 10,
+        "season": 2026,
+        "venue": "Anfield",
+        "drawProb": 0.02121637781131366,
+        "expectedScore": "2-0",
+        "over_2_5_prob": 0.6806535067010933,
+        "btts_prob": 0.4655859239089089
+      }
+    },
+    {
+      "gameId": "epl-2026-10-17-NEW-COV",
+      "home": "COV",
+      "away": "NEW",
+      "pickedTeam": "NEW",
+      "pickedSide": "away",
+      "modelProb": 0.7460329238172971,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879267",
+        "gameweek": 10,
+        "season": 2026,
+        "venue": "Coventry Building Society Arena",
+        "drawProb": 0.04112827144659155,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.565423515817519,
+        "btts_prob": 0.6090531506287803
+      }
+    },
+    {
+      "gameId": "epl-2026-10-17-CHE-EVE",
+      "home": "EVE",
+      "away": "CHE",
+      "pickedTeam": "CHE",
+      "pickedSide": "away",
+      "modelProb": 0.7724535218643624,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401878771",
+        "gameweek": 10,
+        "season": 2026,
+        "venue": "Hill Dickinson Stadium",
+        "drawProb": 0.020686043466876147,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.6946666272062991,
+        "btts_prob": 0.6738423381218809
+      }
+    },
+    {
+      "gameId": "epl-2026-10-17-LIV-BRE",
+      "home": "BRE",
+      "away": "LIV",
+      "pickedTeam": "LIV",
+      "pickedSide": "away",
+      "modelProb": 0.79588161804458,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879262",
+        "gameweek": 10,
+        "season": 2026,
+        "venue": "Gtech Community Stadium",
+        "drawProb": 0.03702437299903217,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.5778487428114715,
+        "btts_prob": 0.6067401965106075
+      }
+    },
+    {
+      "gameId": "epl-2026-10-17-HUL-FUL",
+      "home": "FUL",
+      "away": "HUL",
+      "pickedTeam": "HUL",
+      "pickedSide": "away",
+      "modelProb": 0.7133322033618159,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401878770",
+        "gameweek": 10,
+        "season": 2026,
+        "venue": "Craven Cottage",
+        "drawProb": 0.039325503680645725,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.46486035299193684,
+        "btts_prob": 0.5340409809890363
+      }
+    },
+    {
+      "gameId": "epl-2026-10-17-IPS-CRY",
+      "home": "CRY",
+      "away": "IPS",
+      "pickedTeam": "IPS",
+      "pickedSide": "away",
+      "modelProb": 0.7067310772542638,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879259",
+        "gameweek": 10,
+        "season": 2026,
+        "venue": "Etihad Stadium",
+        "drawProb": 0.04022500993067747,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.7218255798417613,
+        "btts_prob": 0.702392989043519
+      }
+    },
+    {
+      "gameId": "epl-2026-10-17-AVL-NEW",
+      "home": "NEW",
+      "away": "AVL",
+      "pickedTeam": "AVL",
+      "pickedSide": "away",
+      "modelProb": 0.7067622253318708,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879258",
+        "gameweek": 10,
+        "season": 2026,
+        "venue": "St. James' Park",
+        "drawProb": 0.04022678278568752,
+        "expectedScore": "2-1",
+        "over_2_5_prob": 0.7715131004278917,
+        "btts_prob": 0.6711055543177402
+      }
+    },
+    {
+      "gameId": "epl-2026-10-17-MUN-LEE",
+      "home": "LEE",
+      "away": "MUN",
+      "pickedTeam": "MUN",
+      "pickedSide": "away",
+      "modelProb": 0.7724535218643624,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879260",
+        "gameweek": 10,
+        "season": 2026,
+        "venue": "Elland Road",
+        "drawProb": 0.020686043466876147,
+        "expectedScore": "2-0",
+        "over_2_5_prob": 0.54585323710155,
+        "btts_prob": 0.5140479246458232
+      }
+    },
+    {
+      "gameId": "epl-2026-10-17-ARS-NFO",
+      "home": "NFO",
+      "away": "ARS",
+      "pickedTeam": "ARS",
+      "pickedSide": "away",
+      "modelProb": 0.8782963382364836,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401878769",
+        "gameweek": 10,
+        "season": 2026,
+        "venue": "The City Ground",
+        "drawProb": 0.04085830165351328,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.3462557105473391,
+        "btts_prob": 0.4146147711475582
+      }
+    }
+  ]
+}
