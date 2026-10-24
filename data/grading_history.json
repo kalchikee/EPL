@@ -701,6 +701,19 @@
       "homeScore": 0,
       "awayScore": 1,
       "gradedAt": "2026-10-19T09:09:40.614085+00:00"
+    },
+    {
+      "date": "2026-10-20",
+      "gameId": "epl-2026-10-20-NFO-IPS",
+      "home": "IPS",
+      "away": "NFO",
+      "pickedTeam": "NFO",
+      "modelProb": 0.7271291559050455,
+      "actualWinner": "DRAW",
+      "correct": false,
+      "homeScore": 1,
+      "awayScore": 1,
+      "gradedAt": "2026-10-24T08:15:45.860323+00:00"
     }
   ]
 }
