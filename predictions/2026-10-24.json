@@ -1,0 +1,159 @@
+{
+  "sport": "EPL",
+  "date": "2026-10-24",
+  "generatedAt": "2026-10-24T08:15:25.307Z",
+  "picks": [
+    {
+      "gameId": "epl-2026-10-24-CRY-BHA",
+      "home": "BHA",
+      "away": "CRY",
+      "pickedTeam": "BHA",
+      "pickedSide": "home",
+      "modelProb": 0.6606682228847758,
+      "confidenceTier": "high_conviction",
+      "extra": {
+        "matchId": "401879261",
+        "gameweek": 11,
+        "season": 2026,
+        "venue": "American Express Stadium",
+        "drawProb": 0.020347340573352718,
+        "expectedScore": "4-0",
+        "over_2_5_prob": 0.8556215675661113,
+        "btts_prob": 0.4630836179410814
+      }
+    },
+    {
+      "gameId": "epl-2026-10-24-MUN-LEE",
+      "home": "LEE",
+      "away": "MUN",
+      "pickedTeam": "MUN",
+      "pickedSide": "away",
+      "modelProb": 0.7133322033618159,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879260",
+        "gameweek": 11,
+        "season": 2026,
+        "venue": "Elland Road",
+        "drawProb": 0.039325503680645725,
+        "expectedScore": "1-0",
+        "over_2_5_prob": 0.4244024667113885,
+        "btts_prob": 0.4297075153962378
+      }
+    },
+    {
+      "gameId": "epl-2026-10-24-ARS-NFO",
+      "home": "NFO",
+      "away": "ARS",
+      "pickedTeam": "ARS",
+      "pickedSide": "away",
+      "modelProb": 0.8827462444643839,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401878769",
+        "gameweek": 11,
+        "season": 2026,
+        "venue": "The City Ground",
+        "drawProb": 0.03936438102405279,
+        "expectedScore": "0-0",
+        "over_2_5_prob": 0.23215440176071236,
+        "btts_prob": 0.31257090296165896
+      }
+    },
+    {
+      "gameId": "epl-2026-10-24-NFO-IPS",
+      "home": "IPS",
+      "away": "NFO",
+      "pickedTeam": "NFO",
+      "pickedSide": "away",
+      "modelProb": 0.7271291559050455,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879253",
+        "gameweek": 11,
+        "season": 2026,
+        "venue": "Portman Road",
+        "drawProb": 0.020744567094938063,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.5033666066113361,
+        "btts_prob": 0.499363650360284
+      }
+    },
+    {
+      "gameId": "epl-2026-10-24-FUL-COV",
+      "home": "COV",
+      "away": "FUL",
+      "pickedTeam": "FUL",
+      "pickedSide": "away",
+      "modelProb": 0.7067310772542638,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879255",
+        "gameweek": 11,
+        "season": 2026,
+        "venue": "Coventry Building Society Arena",
+        "drawProb": 0.04022500993067747,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.48316017345450113,
+        "btts_prob": 0.542140330220006
+      }
+    },
+    {
+      "gameId": "epl-2026-10-24-TOT-CHE",
+      "home": "CHE",
+      "away": "TOT",
+      "pickedTeam": "TOT",
+      "pickedSide": "away",
+      "modelProb": 0.6499114660499404,
+      "confidenceTier": "high_conviction",
+      "extra": {
+        "matchId": "401878767",
+        "gameweek": 11,
+        "season": 2026,
+        "venue": "Stamford Bridge",
+        "drawProb": 0.05514400317999494,
+        "expectedScore": "3-1",
+        "over_2_5_prob": 0.8130597457848558,
+        "btts_prob": 0.6320663778747526
+      }
+    },
+    {
+      "gameId": "epl-2026-10-24-NEW-CRY",
+      "home": "CRY",
+      "away": "NEW",
+      "pickedTeam": "NEW",
+      "pickedSide": "away",
+      "modelProb": 0.865091147024266,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879254",
+        "gameweek": 11,
+        "season": 2026,
+        "venue": "Selhurst Park",
+        "drawProb": 0.04024399681987997,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.7520497685765488,
+        "btts_prob": 0.7492279736137323
+      }
+    },
+    {
+      "gameId": "epl-2026-10-24-LEE-SUN",
+      "home": "SUN",
+      "away": "LEE",
+      "pickedTeam": "LEE",
+      "pickedSide": "away",
+      "modelProb": 0.7395051967835862,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401878764",
+        "gameweek": 11,
+        "season": 2026,
+        "venue": "Stadium of Light",
+        "drawProb": 0.019803698490136714,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.41028838285726565,
+        "btts_prob": 0.4800997767129872
+      }
+    }
+  ]
+}
