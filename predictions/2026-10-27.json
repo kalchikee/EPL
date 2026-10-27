@@ -1,0 +1,197 @@
+{
+  "sport": "EPL",
+  "date": "2026-10-27",
+  "generatedAt": "2026-10-27T10:01:03.483Z",
+  "picks": [
+    {
+      "gameId": "epl-2026-10-27-NEW-CRY",
+      "home": "CRY",
+      "away": "NEW",
+      "pickedTeam": "NEW",
+      "pickedSide": "away",
+      "modelProb": 0.7725548819311795,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879254",
+        "gameweek": 12,
+        "season": 2026,
+        "venue": "Selhurst Park",
+        "drawProb": 0.04701990421615038,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.6724265918578445,
+        "btts_prob": 0.6914329793868552
+      }
+    },
+    {
+      "gameId": "epl-2026-10-27-BHA-LIV",
+      "home": "LIV",
+      "away": "BHA",
+      "pickedTeam": "LIV",
+      "pickedSide": "home",
+      "modelProb": 0.5866270753743369,
+      "confidenceTier": "strong",
+      "extra": {
+        "matchId": "401878765",
+        "gameweek": 12,
+        "season": 2026,
+        "venue": "Anfield",
+        "drawProb": 0.020930274664590538,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.5339576088635978,
+        "btts_prob": 0.5877074632285448
+      }
+    },
+    {
+      "gameId": "epl-2026-10-27-BOU-MUN",
+      "home": "MUN",
+      "away": "BOU",
+      "pickedTeam": "BOU",
+      "pickedSide": "away",
+      "modelProb": 0.635940543579151,
+      "confidenceTier": "high_conviction",
+      "extra": {
+        "matchId": "401879252",
+        "gameweek": 12,
+        "season": 2026,
+        "venue": "Old Trafford",
+        "drawProb": 0.03932385969958035,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.6485609660460997,
+        "btts_prob": 0.6526818991461787
+      }
+    },
+    {
+      "gameId": "epl-2026-10-27-LEE-SUN",
+      "home": "SUN",
+      "away": "LEE",
+      "pickedTeam": "LEE",
+      "pickedSide": "away",
+      "modelProb": 0.7395051967835862,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401878764",
+        "gameweek": 12,
+        "season": 2026,
+        "venue": "Stadium of Light",
+        "drawProb": 0.019803698490136714,
+        "expectedScore": "0-0",
+        "over_2_5_prob": 0.2811984093368288,
+        "btts_prob": 0.3673471508791156
+      }
+    },
+    {
+      "gameId": "epl-2026-10-27-MUN-CHE",
+      "home": "CHE",
+      "away": "MUN",
+      "pickedTeam": "MUN",
+      "pickedSide": "away",
+      "modelProb": 0.6499114660499404,
+      "confidenceTier": "high_conviction",
+      "extra": {
+        "matchId": "401879248",
+        "gameweek": 12,
+        "season": 2026,
+        "venue": "Stamford Bridge",
+        "drawProb": 0.05514400317999494,
+        "expectedScore": "3-1",
+        "over_2_5_prob": 0.8383516419675531,
+        "btts_prob": 0.6756402791645942
+      }
+    },
+    {
+      "gameId": "epl-2026-10-27-LEE-BOU",
+      "home": "BOU",
+      "away": "LEE",
+      "pickedTeam": "LEE",
+      "pickedSide": "away",
+      "modelProb": 0.6279122389460629,
+      "confidenceTier": "high_conviction",
+      "extra": {
+        "matchId": "401879251",
+        "gameweek": 12,
+        "season": 2026,
+        "venue": "Vitality Stadium",
+        "drawProb": 0.019685897221011696,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.43030257588541004,
+        "btts_prob": 0.4995562825590951
+      }
+    },
+    {
+      "gameId": "epl-2026-10-27-NFO-BRE",
+      "home": "BRE",
+      "away": "NFO",
+      "pickedTeam": "NFO",
+      "pickedSide": "away",
+      "modelProb": 0.7395051967835862,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879249",
+        "gameweek": 12,
+        "season": 2026,
+        "venue": "Gtech Community Stadium",
+        "drawProb": 0.019803698490136714,
+        "expectedScore": "2-0",
+        "over_2_5_prob": 0.49436427805872313,
+        "btts_prob": 0.3958935304915155
+      }
+    },
+    {
+      "gameId": "epl-2026-10-27-BHA-CRY",
+      "home": "CRY",
+      "away": "BHA",
+      "pickedTeam": "BHA",
+      "pickedSide": "away",
+      "modelProb": 0.9023613462255761,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879245",
+        "gameweek": 12,
+        "season": 2026,
+        "venue": "Etihad Stadium",
+        "drawProb": 0.020242159928844004,
+        "expectedScore": "1-3",
+        "over_2_5_prob": 0.8081079531762394,
+        "btts_prob": 0.6378817843488647
+      }
+    },
+    {
+      "gameId": "epl-2026-10-27-FUL-AVL",
+      "home": "AVL",
+      "away": "FUL",
+      "pickedTeam": "FUL",
+      "pickedSide": "away",
+      "modelProb": 0.7207192044317919,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879250",
+        "gameweek": 12,
+        "season": 2026,
+        "venue": "Villa Park",
+        "drawProb": 0.021228456566900058,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.45973467549936353,
+        "btts_prob": 0.4912229602679708
+      }
+    },
+    {
+      "gameId": "epl-2026-10-27-ARS-LIV",
+      "home": "LIV",
+      "away": "ARS",
+      "pickedTeam": "ARS",
+      "pickedSide": "away",
+      "modelProb": 0.6279122389460629,
+      "confidenceTier": "high_conviction",
+      "extra": {
+        "matchId": "401879246",
+        "gameweek": 12,
+        "season": 2026,
+        "venue": "Anfield",
+        "drawProb": 0.019685897221011696,
+        "expectedScore": "0-0",
+        "over_2_5_prob": 0.32007277705240544,
+        "btts_prob": 0.41456203998054325
+      }
+    }
+  ]
+}
