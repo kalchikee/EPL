@@ -1,0 +1,159 @@
+{
+  "sport": "EPL",
+  "date": "2026-11-07",
+  "generatedAt": "2026-11-07T08:09:52.273Z",
+  "picks": [
+    {
+      "gameId": "epl-2026-11-07-ARS-LIV",
+      "home": "LIV",
+      "away": "ARS",
+      "pickedTeam": "ARS",
+      "pickedSide": "away",
+      "modelProb": 0.7133322033618159,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879246",
+        "gameweek": 13,
+        "season": 2026,
+        "venue": "Anfield",
+        "drawProb": 0.039325503680645725,
+        "expectedScore": "0-0",
+        "over_2_5_prob": 0.2038606420042666,
+        "btts_prob": 0.3100168934059999
+      }
+    },
+    {
+      "gameId": "epl-2026-11-07-COV-EVE",
+      "home": "EVE",
+      "away": "COV",
+      "pickedTeam": "COV",
+      "pickedSide": "away",
+      "modelProb": 0.7395051967835862,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879242",
+        "gameweek": 13,
+        "season": 2026,
+        "venue": "Hill Dickinson Stadium",
+        "drawProb": 0.019803698490136714,
+        "expectedScore": "2-0",
+        "over_2_5_prob": 0.5415947606238857,
+        "btts_prob": 0.3920474055861602
+      }
+    },
+    {
+      "gameId": "epl-2026-11-07-TOT-LEE",
+      "home": "LEE",
+      "away": "TOT",
+      "pickedTeam": "TOT",
+      "pickedSide": "away",
+      "modelProb": 0.7906295754026353,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401878758",
+        "gameweek": 13,
+        "season": 2026,
+        "venue": "Elland Road",
+        "drawProb": 0.019033674963396776,
+        "expectedScore": "0-0",
+        "over_2_5_prob": 0.26529721511946247,
+        "btts_prob": 0.3399251214275496
+      }
+    },
+    {
+      "gameId": "epl-2026-11-07-HUL-ARS",
+      "home": "ARS",
+      "away": "HUL",
+      "pickedTeam": "ARS",
+      "pickedSide": "home",
+      "modelProb": 0.6141437097813875,
+      "confidenceTier": "high_conviction",
+      "extra": {
+        "matchId": "401878760",
+        "gameweek": 13,
+        "season": 2026,
+        "venue": "Emirates Stadium",
+        "drawProb": 0.0423421082189589,
+        "expectedScore": "2-0",
+        "over_2_5_prob": 0.40904236159953994,
+        "btts_prob": 0.28357067486718085
+      }
+    },
+    {
+      "gameId": "epl-2026-11-07-NEW-FUL",
+      "home": "FUL",
+      "away": "NEW",
+      "pickedTeam": "NEW",
+      "pickedSide": "away",
+      "modelProb": 0.7906295754026353,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879241",
+        "gameweek": 13,
+        "season": 2026,
+        "venue": "Craven Cottage",
+        "drawProb": 0.019033674963396776,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.48569371489298174,
+        "btts_prob": 0.5177556287527784
+      }
+    },
+    {
+      "gameId": "epl-2026-11-07-LIV-CRY",
+      "home": "CRY",
+      "away": "LIV",
+      "pickedTeam": "LIV",
+      "pickedSide": "away",
+      "modelProb": 0.757837126759165,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879243",
+        "gameweek": 13,
+        "season": 2026,
+        "venue": "Selhurst Park",
+        "drawProb": 0.039216659634143315,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.5053725831272695,
+        "btts_prob": 0.5152183142946211
+      }
+    },
+    {
+      "gameId": "epl-2026-11-07-CHE-SUN",
+      "home": "SUN",
+      "away": "CHE",
+      "pickedTeam": "CHE",
+      "pickedSide": "away",
+      "modelProb": 0.9023613462255761,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879239",
+        "gameweek": 13,
+        "season": 2026,
+        "venue": "Stadium of Light",
+        "drawProb": 0.020242159928844004,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.6745208128674749,
+        "btts_prob": 0.6444715440267954
+      }
+    },
+    {
+      "gameId": "epl-2026-11-07-AVL-MUN",
+      "home": "MUN",
+      "away": "AVL",
+      "pickedTeam": "AVL",
+      "pickedSide": "away",
+      "modelProb": 0.7906295754026353,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879240",
+        "gameweek": 13,
+        "season": 2026,
+        "venue": "Old Trafford",
+        "drawProb": 0.019033674963396776,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.49283954904252275,
+        "btts_prob": 0.5416655747800301
+      }
+    }
+  ]
+}
