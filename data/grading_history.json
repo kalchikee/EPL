@@ -831,6 +831,19 @@
       "homeScore": 0,
       "awayScore": 1,
       "gradedAt": "2026-11-02T09:04:22.182849+00:00"
+    },
+    {
+      "date": "2026-11-03",
+      "gameId": "epl-2026-11-03-COV-EVE",
+      "home": "EVE",
+      "away": "COV",
+      "pickedTeam": "COV",
+      "modelProb": 0.7271291559050455,
+      "actualWinner": "EVE",
+      "correct": false,
+      "homeScore": 3,
+      "awayScore": 1,
+      "gradedAt": "2026-11-07T08:10:06.562801+00:00"
     }
   ]
 }
