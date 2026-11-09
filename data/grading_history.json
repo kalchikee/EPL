@@ -844,6 +844,84 @@
       "homeScore": 3,
       "awayScore": 1,
       "gradedAt": "2026-11-07T08:10:06.562801+00:00"
+    },
+    {
+      "date": "2026-11-07",
+      "gameId": "epl-2026-11-07-TOT-LEE",
+      "home": "LEE",
+      "away": "TOT",
+      "pickedTeam": "TOT",
+      "modelProb": 0.7906295754026353,
+      "actualWinner": "LEE",
+      "correct": false,
+      "homeScore": 1,
+      "awayScore": 0,
+      "gradedAt": "2026-11-09T09:04:31.473889+00:00"
+    },
+    {
+      "date": "2026-11-07",
+      "gameId": "epl-2026-11-07-HUL-ARS",
+      "home": "ARS",
+      "away": "HUL",
+      "pickedTeam": "ARS",
+      "modelProb": 0.6141437097813875,
+      "actualWinner": "ARS",
+      "correct": true,
+      "homeScore": 1,
+      "awayScore": 0,
+      "gradedAt": "2026-11-09T09:04:31.473914+00:00"
+    },
+    {
+      "date": "2026-11-07",
+      "gameId": "epl-2026-11-07-NEW-FUL",
+      "home": "FUL",
+      "away": "NEW",
+      "pickedTeam": "NEW",
+      "modelProb": 0.7906295754026353,
+      "actualWinner": "DRAW",
+      "correct": false,
+      "homeScore": 1,
+      "awayScore": 1,
+      "gradedAt": "2026-11-09T09:04:31.473918+00:00"
+    },
+    {
+      "date": "2026-11-07",
+      "gameId": "epl-2026-11-07-LIV-CRY",
+      "home": "CRY",
+      "away": "LIV",
+      "pickedTeam": "LIV",
+      "modelProb": 0.757837126759165,
+      "actualWinner": "LIV",
+      "correct": true,
+      "homeScore": 1,
+      "awayScore": 3,
+      "gradedAt": "2026-11-09T09:04:31.473922+00:00"
+    },
+    {
+      "date": "2026-11-07",
+      "gameId": "epl-2026-11-07-CHE-SUN",
+      "home": "SUN",
+      "away": "CHE",
+      "pickedTeam": "CHE",
+      "modelProb": 0.9023613462255761,
+      "actualWinner": "SUN",
+      "correct": false,
+      "homeScore": 1,
+      "awayScore": 0,
+      "gradedAt": "2026-11-09T09:04:31.473925+00:00"
+    },
+    {
+      "date": "2026-11-07",
+      "gameId": "epl-2026-11-07-AVL-MUN",
+      "home": "MUN",
+      "away": "AVL",
+      "pickedTeam": "AVL",
+      "modelProb": 0.7906295754026353,
+      "actualWinner": "DRAW",
+      "correct": false,
+      "homeScore": 4,
+      "awayScore": 4,
+      "gradedAt": "2026-11-09T09:04:31.473927+00:00"
     }
   ]
 }
