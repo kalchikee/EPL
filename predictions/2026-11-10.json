@@ -1,0 +1,83 @@
+{
+  "sport": "EPL",
+  "date": "2026-11-10",
+  "generatedAt": "2026-11-10T10:01:05.040Z",
+  "picks": [
+    {
+      "gameId": "epl-2026-11-10-BRE-BHA",
+      "home": "BHA",
+      "away": "BRE",
+      "pickedTeam": "BHA",
+      "pickedSide": "home",
+      "modelProb": 0.6141437097813875,
+      "confidenceTier": "high_conviction",
+      "extra": {
+        "matchId": "401879244",
+        "gameweek": 14,
+        "season": 2026,
+        "venue": "American Express Stadium",
+        "drawProb": 0.0423421082189589,
+        "expectedScore": "2-0",
+        "over_2_5_prob": 0.6054841931050052,
+        "btts_prob": 0.39272784735292504
+      }
+    },
+    {
+      "gameId": "epl-2026-11-10-LIV-CRY",
+      "home": "CRY",
+      "away": "LIV",
+      "pickedTeam": "LIV",
+      "pickedSide": "away",
+      "modelProb": 0.757837126759165,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879243",
+        "gameweek": 14,
+        "season": 2026,
+        "venue": "Selhurst Park",
+        "drawProb": 0.039216659634143315,
+        "expectedScore": "0-2",
+        "over_2_5_prob": 0.528506926291704,
+        "btts_prob": 0.49019726336521
+      }
+    },
+    {
+      "gameId": "epl-2026-11-10-CHE-SUN",
+      "home": "SUN",
+      "away": "CHE",
+      "pickedTeam": "CHE",
+      "pickedSide": "away",
+      "modelProb": 0.7418308476404604,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879239",
+        "gameweek": 14,
+        "season": 2026,
+        "venue": "Stadium of Light",
+        "drawProb": 0.08491933871075262,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.5089069150137048,
+        "btts_prob": 0.5440353836977461
+      }
+    },
+    {
+      "gameId": "epl-2026-11-10-AVL-MUN",
+      "home": "MUN",
+      "away": "AVL",
+      "pickedTeam": "AVL",
+      "pickedSide": "away",
+      "modelProb": 0.757837126759165,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879240",
+        "gameweek": 14,
+        "season": 2026,
+        "venue": "Old Trafford",
+        "drawProb": 0.039216659634143315,
+        "expectedScore": "1-1",
+        "over_2_5_prob": 0.6510349612181462,
+        "btts_prob": 0.6519099901799152
+      }
+    }
+  ]
+}
