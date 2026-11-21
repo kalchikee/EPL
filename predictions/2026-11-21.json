@@ -1,0 +1,102 @@
+{
+  "sport": "EPL",
+  "date": "2026-11-21",
+  "generatedAt": "2026-11-21T08:10:04.912Z",
+  "picks": [
+    {
+      "gameId": "epl-2026-11-21-NFO-BOU",
+      "home": "BOU",
+      "away": "NFO",
+      "pickedTeam": "NFO",
+      "pickedSide": "away",
+      "modelProb": 0.8927406148343755,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879238",
+        "gameweek": 15,
+        "season": 2026,
+        "venue": "Vitality Stadium",
+        "drawProb": 0.02083061434613543,
+        "expectedScore": "2-0",
+        "over_2_5_prob": 0.5239771280442842,
+        "btts_prob": 0.45390853666574926
+      }
+    },
+    {
+      "gameId": "epl-2026-11-21-SUN-AVL",
+      "home": "AVL",
+      "away": "SUN",
+      "pickedTeam": "SUN",
+      "pickedSide": "away",
+      "modelProb": 0.6499114660499404,
+      "confidenceTier": "high_conviction",
+      "extra": {
+        "matchId": "401878756",
+        "gameweek": 15,
+        "season": 2026,
+        "venue": "Villa Park",
+        "drawProb": 0.05514400317999494,
+        "expectedScore": "2-0",
+        "over_2_5_prob": 0.6202073763459439,
+        "btts_prob": 0.48184979505753806
+      }
+    },
+    {
+      "gameId": "epl-2026-11-21-ARS-NEW",
+      "home": "NEW",
+      "away": "ARS",
+      "pickedTeam": "ARS",
+      "pickedSide": "away",
+      "modelProb": 0.8815976818081228,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879232",
+        "gameweek": 15,
+        "season": 2026,
+        "venue": "St. James' Park",
+        "drawProb": 0.03974997599134853,
+        "expectedScore": "0-1",
+        "over_2_5_prob": 0.320060462968321,
+        "btts_prob": 0.355833200667217
+      }
+    },
+    {
+      "gameId": "epl-2026-11-21-BHA-HUL",
+      "home": "HUL",
+      "away": "BHA",
+      "pickedTeam": "BHA",
+      "pickedSide": "away",
+      "modelProb": 0.8782963382364836,
+      "confidenceTier": "extreme",
+      "extra": {
+        "matchId": "401879234",
+        "gameweek": 15,
+        "season": 2026,
+        "venue": "The MKM Stadium",
+        "drawProb": 0.04085830165351328,
+        "expectedScore": "0-1",
+        "over_2_5_prob": 0.4165108797002432,
+        "btts_prob": 0.4337745313029333
+      }
+    },
+    {
+      "gameId": "epl-2026-11-21-MUN-LIV",
+      "home": "LIV",
+      "away": "MUN",
+      "pickedTeam": "LIV",
+      "pickedSide": "home",
+      "modelProb": 0.6141437097813875,
+      "confidenceTier": "high_conviction",
+      "extra": {
+        "matchId": "401878755",
+        "gameweek": 15,
+        "season": 2026,
+        "venue": "Anfield",
+        "drawProb": 0.0423421082189589,
+        "expectedScore": "2-0",
+        "over_2_5_prob": 0.6946682738322487,
+        "btts_prob": 0.49424464146541536
+      }
+    }
+  ]
+}
