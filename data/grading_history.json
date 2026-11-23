@@ -922,6 +922,71 @@
       "homeScore": 4,
       "awayScore": 4,
       "gradedAt": "2026-11-09T09:04:31.473927+00:00"
+    },
+    {
+      "date": "2026-11-21",
+      "gameId": "epl-2026-11-21-NFO-BOU",
+      "home": "BOU",
+      "away": "NFO",
+      "pickedTeam": "NFO",
+      "modelProb": 0.8927406148343755,
+      "actualWinner": "BOU",
+      "correct": false,
+      "homeScore": 2,
+      "awayScore": 0,
+      "gradedAt": "2026-11-23T09:04:52.051235+00:00"
+    },
+    {
+      "date": "2026-11-21",
+      "gameId": "epl-2026-11-21-SUN-AVL",
+      "home": "AVL",
+      "away": "SUN",
+      "pickedTeam": "SUN",
+      "modelProb": 0.6499114660499404,
+      "actualWinner": "DRAW",
+      "correct": false,
+      "homeScore": 0,
+      "awayScore": 0,
+      "gradedAt": "2026-11-23T09:04:52.051258+00:00"
+    },
+    {
+      "date": "2026-11-21",
+      "gameId": "epl-2026-11-21-ARS-NEW",
+      "home": "NEW",
+      "away": "ARS",
+      "pickedTeam": "ARS",
+      "modelProb": 0.8815976818081228,
+      "actualWinner": "DRAW",
+      "correct": false,
+      "homeScore": 2,
+      "awayScore": 2,
+      "gradedAt": "2026-11-23T09:04:52.051263+00:00"
+    },
+    {
+      "date": "2026-11-21",
+      "gameId": "epl-2026-11-21-BHA-HUL",
+      "home": "HUL",
+      "away": "BHA",
+      "pickedTeam": "BHA",
+      "modelProb": 0.8782963382364836,
+      "actualWinner": "HUL",
+      "correct": false,
+      "homeScore": 2,
+      "awayScore": 0,
+      "gradedAt": "2026-11-23T09:04:52.051267+00:00"
+    },
+    {
+      "date": "2026-11-21",
+      "gameId": "epl-2026-11-21-MUN-LIV",
+      "home": "LIV",
+      "away": "MUN",
+      "pickedTeam": "LIV",
+      "modelProb": 0.6141437097813875,
+      "actualWinner": "LIV",
+      "correct": true,
+      "homeScore": 4,
+      "awayScore": 0,
+      "gradedAt": "2026-11-23T09:04:52.051270+00:00"
     }
   ]
 }
