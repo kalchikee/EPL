@@ -987,6 +987,19 @@
       "homeScore": 4,
       "awayScore": 0,
       "gradedAt": "2026-11-23T09:04:52.051270+00:00"
+    },
+    {
+      "date": "2026-11-24",
+      "gameId": "epl-2026-11-24-CHE-NFO",
+      "home": "NFO",
+      "away": "CHE",
+      "pickedTeam": "CHE",
+      "modelProb": 0.8103580651915963,
+      "actualWinner": "NFO",
+      "correct": false,
+      "homeScore": 3,
+      "awayScore": 2,
+      "gradedAt": "2026-11-28T08:10:24.959108+00:00"
     }
   ]
 }
